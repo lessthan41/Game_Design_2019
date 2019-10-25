@@ -10,7 +10,7 @@ public class Done_GameController : MonoBehaviour
     public GameObject[] hazards;
     public Vector3 spawnValues;
     public int hazardCount;
-    
+
     // 產生怪物間隔時間
     public float spawnWait;
     // 遊戲開始間隔時間
@@ -22,10 +22,10 @@ public class Done_GameController : MonoBehaviour
     public Text restartText;
     public Text gameOverText;
 
-    private bool gameOver;
+    public static bool gameOver;
     private bool restart;
     private int score;
-    
+
     EntityManager manager;
 
     Entity enemyEntityPrefab0;
@@ -40,7 +40,7 @@ public class Done_GameController : MonoBehaviour
         enemyEntityPrefab1 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[1], World.Active);
         enemyEntityPrefab2 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[2], World.Active);
         enemyEntityPrefab3 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[3], World.Active);
-        
+
         gameOver = false;
         restart = false;
         restartText.text = "";
@@ -59,10 +59,14 @@ public class Done_GameController : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+        if (gameOver)
+        {
+            GameOver();
+        }
     }
 
     IEnumerator SpawnWaves()
-    { 
+    {
         yield return new WaitForSeconds(startWait);
         while (true)
         {
@@ -71,7 +75,7 @@ public class Done_GameController : MonoBehaviour
                 Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
                 Quaternion spawnRotation = Quaternion.identity;
 
-                Entity enemy = manager.Instantiate(enemyEntityPrefab2);
+                Entity enemy = manager.Instantiate(enemyEntityPrefab3);
                 manager.SetComponentData(enemy, new Translation { Value = spawnPosition });
                 manager.SetComponentData(enemy, new Rotation { Value = Quaternion.Normalize(spawnRotation) });
 
@@ -102,6 +106,6 @@ public class Done_GameController : MonoBehaviour
     public void GameOver()
     {
         gameOverText.text = "Game Over!";
-        gameOver = true;
+        // gameOver = true;
     }
 }

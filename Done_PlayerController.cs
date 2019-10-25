@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
+using Unity.Mathematics;
 
 
 [System.Serializable]
@@ -26,6 +27,7 @@ public class Done_PlayerController : MonoBehaviour
 
 	// Code Calculate Need
 	private float nextFire;
+	public static float3 playerPosition;
 
     EntityManager manager;
     Entity bulletEntityPrefab;
@@ -65,6 +67,11 @@ public class Done_PlayerController : MonoBehaviour
 			0.0f,
 			Mathf.Clamp (GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)
 		);
+
+		// (測試) 時刻紀錄位置 & 判定是否刪除玩家、結束遊戲
+
+		playerPosition = GetComponent<Rigidbody>().position;
+		// Debug.Log(playerPosition);
 	}
 
     void SpawnBulletECS(Vector3 rotation)

@@ -6,6 +6,8 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
+
+
 [UpdateAfter(typeof(MoveForwardSystem))]
 [UpdateBefore(typeof(TimedDestroySystem))]
 public class CollisionSystem : JobComponentSystem
@@ -67,7 +69,7 @@ public class CollisionSystem : JobComponentSystem
 		var translationType = GetArchetypeChunkComponentType<Translation>(true);
 
 		float enemyRadius = 1;
-		// float playerRadius = 1;
+		float playerRadius = 1;
 
 		// 處理敵機損血
 		var jobEvB = new CollisionJob()
@@ -92,13 +94,28 @@ public class CollisionSystem : JobComponentSystem
 		jobHandle = jobBvE.Schedule(bulletGroup, jobHandle);
 
 		// 處理玩家撞敵機
-		// var jobPvE = new CollisionJob()
-		// {
-		// 	radius = playerRadius * playerRadius,
-		// 	healthType = healthType,
-		// 	translationType = translationType,
-		// 	transToTestAgainst = enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob)
-		// };
+		NativeArray<Translation> enemyPosition =
+			enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
+
+
+		for (int i = 0; i < enemyPosition.Length; i++)
+		{
+			float dx = Done_PlayerController.playerPosition.x - enemyPosition[i].Value.x;
+			float dz = Done_PlayerController.playerPosition.z - enemyPosition[i].Value.z;
+
+			if (dx * dx + dz * dz <= playerRadius)
+			{
+				Done_GameController.gameOver = true;
+			}
+		}
+
+		// If GameOver 就刪除所有的敵機 & 玩家
+		if (Done_GameController.gameOver)
+		{
+			Object.Destroy(GameObject.Find("Done_Player_test")); // Delete Player
+		}
+
+		enemyPosition.Dispose();
 
 		return jobHandle;
 	}
