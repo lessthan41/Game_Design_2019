@@ -14,12 +14,10 @@ public class CollisionSystem : JobComponentSystem
 {
 	EntityQuery enemyGroup;
 	EntityQuery bulletGroup;
-	EntityQuery playerGroup;
 
 	protected override void OnCreate()
 	{
 		// 搜出所有帶有以下特質的Entity
-		playerGroup = GetEntityQuery(typeof(Health), ComponentType.ReadOnly<Translation>(), 	ComponentType.ReadOnly<PlayerTag>());
 		enemyGroup = GetEntityQuery(typeof(Health), ComponentType.ReadOnly<Translation>(), ComponentType.ReadOnly<EnemyTag>());
 		bulletGroup = GetEntityQuery(typeof(Health), ComponentType.ReadOnly<Translation>(), ComponentType.ReadOnly<BulletTag>());
 	}
@@ -112,7 +110,7 @@ public class CollisionSystem : JobComponentSystem
 		// If GameOver 就刪除所有的敵機 & 玩家
 		if (Done_GameController.gameOver)
 		{
-			Object.Destroy(GameObject.Find("Done_Player_test")); // Delete Player
+			Object.Destroy(GameObject.Find("Done_Player")); // Delete Player
 		}
 
 		enemyPosition.Dispose();

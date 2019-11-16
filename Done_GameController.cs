@@ -23,8 +23,8 @@ public class Done_GameController : MonoBehaviour
     public Text gameOverText;
 
     public static bool gameOver;
+    public static int score;
     private bool restart;
-    private int score;
 
     EntityManager manager;
 
@@ -59,6 +59,7 @@ public class Done_GameController : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+
         if (gameOver)
         {
             GameOver();

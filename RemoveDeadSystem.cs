@@ -1,5 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Transforms;
+using System.Collections;
+using UnityEngine;
 
 [UpdateInGroup(typeof(InitializationSystemGroup))]
 public class RemoveDeadSystem : ComponentSystem
@@ -13,6 +15,8 @@ public class RemoveDeadSystem : ComponentSystem
 				if (EntityManager.HasComponent(entity, typeof(EnemyTag)))
 				{
 					PostUpdateCommands.DestroyEntity(entity);
+					// Done_GameController.score += 100;
+					// Debug.Log(Done_GameController.score);
 				}
 				else if (EntityManager.HasComponent(entity, typeof(BulletTag)))
 				{
