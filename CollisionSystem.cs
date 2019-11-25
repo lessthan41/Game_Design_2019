@@ -7,7 +7,6 @@ using Unity.Mathematics;
 using Unity.Transforms;
 
 
-
 [UpdateAfter(typeof(MoveForwardSystem))]
 [UpdateBefore(typeof(TimedDestroySystem))]
 public class CollisionSystem : JobComponentSystem

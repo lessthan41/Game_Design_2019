@@ -23,7 +23,10 @@ public class Done_GameController : MonoBehaviour
     public Text gameOverText;
 
     public static bool gameOver;
+    public static int WIN_SCORE = 100;
     public static int score;
+
+    public int recordScore;
     private bool restart;
 
     EntityManager manager;
@@ -52,6 +55,7 @@ public class Done_GameController : MonoBehaviour
 
     void Update()
     {
+        // restart
         if (restart)
         {
             if (Input.GetKeyDown(KeyCode.R))
@@ -60,9 +64,26 @@ public class Done_GameController : MonoBehaviour
             }
         }
 
+        // show gameOver or not
         if (gameOver)
         {
-            GameOver();
+            if (score < WIN_SCORE)
+            {
+                GameOver();
+            }
+        }
+
+        // add score
+        if (recordScore != score)
+        {
+            recordScore = score;
+            UpdateScore();
+        }
+
+        // win
+        if (score >= WIN_SCORE)
+        {
+            gameOver = true;
         }
     }
 
@@ -93,10 +114,9 @@ public class Done_GameController : MonoBehaviour
         }
     }
 
-    public void AddScore(int newScoreValue)
+    public static void AddScore(int newScoreValue)
     {
         score += newScoreValue;
-        UpdateScore();
     }
 
     void UpdateScore()

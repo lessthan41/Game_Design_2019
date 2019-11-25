@@ -67,16 +67,16 @@ public class Done_GameController_test : MonoBehaviour
         manager.SetComponentData(enemy, new Translation { Value = spawnPosition });
         manager.SetComponentData(enemy, new Rotation { Value = Quaternion.Normalize(spawnRotation) });
 
-        // while (true)
-        // {
-        //     yield return new WaitForSeconds(checkWait);
-        //     if (gameOver)
-        //     {
-        //         restartText.text = "Press 'R' for Restart";
-        //         restart = true;
-        //         break;
-        //     }
-        // }
+        while (true)
+        {
+            yield return new WaitForSeconds(checkWait);
+            if (gameOver)
+            {
+                restartText.text = "Press 'R' for Restart";
+                restart = true;
+                break;
+            }
+        }
     }
 
     public void AddScore(int newScoreValue)
