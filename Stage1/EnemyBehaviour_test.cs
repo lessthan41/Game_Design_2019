@@ -11,12 +11,14 @@ public class EnemyBehaviour_test : MonoBehaviour, IConvertGameObjectToEntity
 	// public float speed;
 	public GameObject shot;
 	public Transform shotSpawn;
+	public float stage1EnemySpeed;
 	public float enemyHealth;
 	public Entity enemyBulletEntityPrefab;
 	// public float enemyFireRate;
 
 	// Code Calculate Need
 	// private float nextFire;
+	private float3 enemyPosition;
 
 	EntityManager manager;
 
@@ -24,9 +26,13 @@ public class EnemyBehaviour_test : MonoBehaviour, IConvertGameObjectToEntity
 	public void Convert(Entity entity, EntityManager manager, GameObjectConversionSystem conversionSystem)
 	{
 	    manager.AddComponent(entity, typeof(EnemyTag));
+		manager.AddComponent(entity, typeof(BossMoving));
 
 	    Health health = new Health { Value = enemyHealth };
 	    manager.AddComponentData(entity, health);
+
+		MoveSpeed moveSpeed = new MoveSpeed { Value = stage1EnemySpeed };
+		manager.AddComponentData(entity, moveSpeed);
 
 		// shotSpawn shots = new shotSpawn { Value = shotSpawn };
     }
@@ -39,18 +45,18 @@ public class EnemyBehaviour_test : MonoBehaviour, IConvertGameObjectToEntity
 
 	// void Update()
 	// {
-	// 	// if(Time.time > nextFire)
-	// 	// {
-	// 	// 	nextFire = Time.time + enemyFireRate;
-	// 	Vector3 rotation = shotSpawn.rotation.eulerAngles;
-    //     rotation.x = 0f;
-	//
-	// 	Debug.Log(rotation);
-	//
-	// 	UnitBulletECS(rotation);
-	// 	// }
+		// if(Time.time > nextFire)
+		// {
+		// 	nextFire = Time.time + enemyFireRate;
+		// Vector3 rotation = shotSpawn.rotation.eulerAngles;
+        // rotation.x = 0f;
+		//
+		// Debug.Log(rotation);
+		//
+		// UnitBulletECS(rotation);
+		// }
 	// }
-	//
+
 	// void UnitBulletECS(Vector3 rotation)
     // {
     //     Vector3 tempRot = rotation;

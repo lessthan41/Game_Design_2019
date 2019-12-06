@@ -22,51 +22,35 @@
 // 	[BurstCompile]
 // 	struct EnemyShootingJob : IJobChunk
 // 	{
-//         [ReadOnly]
-//         public float DeltaTime;
+// 		[ReadOnly] public ArchetypeChunkComponentType<Translation> translationType;
 //
-// 		[ReadOnly]
-//         public ArchetypeChunkComponentType<Rotation> rotationType;
-//         // public EntityCommandBuffer.Concurrent ECSCommandBuffer;
-//
+// 		[DeallocateOnJobCompletion]
+// 		[ReadOnly] public NativeArray<Translation> enemyPosition;
 //
 // 		public void Execute(ArchetypeChunk chunk, int chunkIndex, int firstEntityIndex)
 // 		{
-// 			var chunkRotations = chunk.GetNativeArray(rotationType);
+// 			var chunkTranslations = chunk.GetNativeArray(translationType);
 // 			for (int i = 0; i < chunk.Count; i++)
 // 			{
-// 				Vector3 rot = chunkRotations[i];
-//
-// 				// Rotation rot = chunkRotations[i];
-//                 UnitBulletECS(rot);
+// 				Translation pos = chunkTranslations[i];
+// 				Vector3 temp = new Vector3(pos.Value.x, pos.Value.y, pos.Value.z);
+// 				EnemyShooting_test.enemyShotSpawn.position = temp;
 // 			}
 // 		}
 // 	}
 //
 // 	protected override JobHandle OnUpdate(JobHandle inputDependencies)
 // 	{
-// 		var rotationType = GetArchetypeChunkComponentType<Rotation>(true);
+// 		var translationType = GetArchetypeChunkComponentType<Translation>(true);
+// 		NativeArray<Translation> enemyPosition = enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
 //
 // 		// 處理敵機損血
 // 		var jobShooting = new EnemyShootingJob()
 // 		{
-// 			rotationType = rotationType,
-//             // ECSCommandBuffer = ECSCommandBuffer.CreateCommandBuffer().ToConcurrent(),
-//             DeltaTime = UnityEngine.Time.deltaTime
+// 			enemyPosition = enemyPosition,
+// 			translationType = translationType,
 // 		};
 //
 // 		return jobShooting.Schedule(enemyGroup, inputDependencies);
 // 	}
-//
-//     static void UnitBulletECS(Vector3 rotation)
-//     {
-//         Vector3 tempRot = rotation;
-//
-//         NativeArray<Entity> bullets = new NativeArray<Entity>(1, Allocator.TempJob);
-//         EntityManager.Instantiate(EnemyBehaviour_test.enemyBulletEntityPrefab, bullets);
-//         EntityManager.SetComponentData(bullets[0], new Translation { Value = shotSpawn.position });
-//         EntityManager.SetComponentData(bullets[0], new Rotation { Value = Quaternion.Euler(tempRot) });
-//
-//         bullets.Dispose();
-//     }
 // }
