@@ -10,11 +10,17 @@ public class EnemyShootingSystem : ComponentSystem
 {
 	protected override void OnUpdate()
 	{
-		Entities.ForEach((Entity entity, ref Translation pos) =>
+		Entities.ForEach((Entity entity, ref Translation pos, ref Health health) =>
 		{
 			if (EntityManager.HasComponent(entity, typeof(EnemyTag)))
 			{
 				EnemyShooting_stage1.SetPosition (pos.Value);
+			}
+
+			// if gameover delete entity
+			if (GameObject.Find("Done_Player") == null)
+			{
+			    PostUpdateCommands.DestroyEntity(entity);
 			}
 		});
 	}
