@@ -48,6 +48,7 @@ public class Done_GameController : MonoBehaviour
         restart = false;
         restartText.text = "";
         gameOverText.text = "";
+        recordScore = 0;
         score = 0;
         UpdateScore();
         StartCoroutine(SpawnWaves());
@@ -103,7 +104,7 @@ public class Done_GameController : MonoBehaviour
 
                 yield return new WaitForSeconds(spawnWait);
             }
-            
+
             yield return new WaitForSeconds(waveWait);
 
             if (gameOver)
