@@ -6,7 +6,7 @@ using UnityEngine;
 [UpdateAfter(typeof(MoveForwardSystem))]
 [UpdateAfter(typeof(BossMovingSystem))]
 [UpdateBefore(typeof(TimedDestroySystem))]
-public class EnemyShootingSystem : ComponentSystem
+public class PositionUpdateSystem : ComponentSystem
 {
 	protected override void OnUpdate()
 	{

@@ -13,10 +13,7 @@ public class EnemyBehaviour_stage1 : MonoBehaviour, IConvertGameObjectToEntity
 	public float enemyHealth;
 	public Entity enemyBulletEntityPrefab;
 
-	private float3 enemyPosition;
-
 	EntityManager manager;
-
 
 	public void Convert(Entity entity, EntityManager manager, GameObjectConversionSystem conversionSystem)
 	{
@@ -28,6 +25,5 @@ public class EnemyBehaviour_stage1 : MonoBehaviour, IConvertGameObjectToEntity
 
 		MoveSpeed moveSpeed = new MoveSpeed { Value = stage1EnemySpeed };
 		manager.AddComponentData(entity, moveSpeed);
-
     }
 }

@@ -10,12 +10,17 @@ public class EnemyShooting_stage1 : MonoBehaviour
     public Transform enemyShotSpawn;
     public GameObject shot;
     public float speed;
-    public float EnemyFireRate;
+    public float EnemyFireRate1;
+    public float EnemyFireRate2;
+    public float EnemyFireRate3;
     public int spreadAmount_spawn;
     public int spreadAmount_round;
 
     public static Vector3 shotSpawnRecorder;
-    private float nextFire;
+    private float nextFire1;
+    private float nextFire2;
+    private float nextFire3;
+    private bool haveAccelerate;
     EntityManager manager;
     Entity bulletEntityPrefab;
 
@@ -23,6 +28,10 @@ public class EnemyShooting_stage1 : MonoBehaviour
     {
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
+        nextFire1 = Time.time + Done_GameController_stage1.startWait;
+        nextFire2 = Time.time + Done_GameController_stage1.startWait + 10;
+        nextFire3 = Time.time + Done_GameController_stage1.startWait + 20;
+        haveAccelerate = false;
     }
 
     void Update()
@@ -32,28 +41,38 @@ public class EnemyShooting_stage1 : MonoBehaviour
             enemyShotSpawn.position = shotSpawnRecorder + new Vector3 (-1f, 0f, 1f);
         }
 
-        if (Input.GetKey("x") &&  Time.time > nextFire)
+        // 30秒後提高難度
+        if (Done_GameController_stage1.time == 30 && haveAccelerate == false)
+        {
+            haveAccelerate = true;
+            EnemyFireRate1 /= 2;
+            EnemyFireRate2 /= 2;
+            EnemyFireRate3 /= 2;
+            spreadAmount_round *= 2;
+            spreadAmount_spawn *= 2;
+        }
+
+        if (Time.time > nextFire1 && Done_GameController_stage1.gameOver == false)
 		{
-            nextFire = Time.time + EnemyFireRate;
+            nextFire1 = Time.time + EnemyFireRate1 * UnityEngine.Random.Range(0.25f, 1f);
             Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
             rotation.x = 0f;
 			UnitBulletECS(rotation);
             GetComponent<AudioSource>().Play ();
 		}
 
-        if (Input.GetKey("c") &&  Time.time > nextFire)
+        if (Time.time > nextFire2 && Done_GameController_stage1.gameOver == false)
 		{
-            nextFire = Time.time + EnemyFireRate;
+            nextFire2 = Time.time + EnemyFireRate2 * UnityEngine.Random.Range(0.5f, 2f);
             Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
             rotation.x = 0f;
 			SpawnBulletECS(rotation);
             GetComponent<AudioSource>().Play ();
 		}
 
-        if (Input.GetKey("v") &&  Time.time > nextFire)
+        if (Time.time > nextFire3 && Done_GameController_stage1.gameOver == false)
 		{
-            nextFire = Time.time + EnemyFireRate;
-            // enemyShotSpawn.position += new Vector3 (0f, 0f, -1f);
+            nextFire3 = Time.time + EnemyFireRate3 * UnityEngine.Random.Range(0.75f, 2f);
             Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
             rotation.x = 0f;
 			RoundBulletECS(rotation);

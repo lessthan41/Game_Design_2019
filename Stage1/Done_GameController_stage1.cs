@@ -10,20 +10,23 @@ public class Done_GameController_stage1 : MonoBehaviour
     public GameObject hazards;
     public Vector3 spawnValues;
 
-    // 遊戲開始間隔時間
-    public float startWait;
-    public float checkWait;
+    // 遊戲時間、遊戲開始間隔時間
+    public int GameTime;
+    public float GameStartWait;
 
-    public Text scoreText;
+    public float checkWait;
+    public static float startWait;
+    public static int time;
+
+    public Text timeText;
     public Text restartText;
     public Text gameOverText;
 
+    private float timeRecorder;
     public static bool gameOver;
-    public static int score;
     private bool restart;
 
     EntityManager manager;
-
     Entity enemyEntityPrefab;
 
     void Start()
@@ -33,15 +36,26 @@ public class Done_GameController_stage1 : MonoBehaviour
 
         gameOver = false;
         restart = false;
+        time = GameTime;
+        startWait = GameStartWait;
         restartText.text = "";
         gameOverText.text = "";
-        score = 0;
+        timeRecorder = Time.time + startWait;
         UpdateScore();
         StartCoroutine(SpawnWaves());
     }
 
     void Update()
     {
+        // update time
+        if (Time.time >= timeRecorder + 1 && time > 0)
+        {
+            timeRecorder = Time.time;
+            time--;
+            UpdateScore();
+        }
+
+        // restart
         if (restart)
         {
             if (Input.GetKeyDown(KeyCode.R))
@@ -50,6 +64,7 @@ public class Done_GameController_stage1 : MonoBehaviour
             }
         }
 
+        // gameover text
         if (gameOver)
         {
             GameOver();
@@ -58,7 +73,7 @@ public class Done_GameController_stage1 : MonoBehaviour
 
     IEnumerator SpawnWaves()
     {
-        yield return new WaitForSeconds(startWait);
+        // yield return new WaitForSeconds(startWait);
 
         Vector3 spawnPosition = new Vector3(spawnValues.x, spawnValues.y, spawnValues.z);
         Quaternion spawnRotation = Quaternion.identity;
@@ -79,20 +94,13 @@ public class Done_GameController_stage1 : MonoBehaviour
         }
     }
 
-    public void AddScore(int newScoreValue)
-    {
-        score += newScoreValue;
-        UpdateScore();
-    }
-
     void UpdateScore()
     {
-        scoreText.text = "Score: " + score;
+        timeText.text = "Time: " + time;
     }
 
     public void GameOver()
     {
         gameOverText.text = "Game Over!";
-        gameOver = true;
     }
 }

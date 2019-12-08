@@ -7,11 +7,16 @@ public class SceneSwitch : MonoBehaviour
 {
     public Animator animator;
 
+    void Start ()
+    {
+        DontDestroyOnLoad(GameObject.Find("Background Music"));
+    }
+
     public void fade ()
     {
         animator.SetTrigger("FadeOut");
     }
-    
+
     public void SceneSwitcher ()
     {
         int nextSceneID = SceneManager.GetActiveScene().buildIndex + 1;

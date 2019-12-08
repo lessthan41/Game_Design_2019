@@ -9,6 +9,7 @@ namespace Unity.Transforms
 {
 	public class BossMovingSystem : JobComponentSystem
 	{
+
 		[BurstCompile]
 		[RequireComponentTag(typeof(BossMoving))]
 		struct MoveForwardRotation : IJobForEach<Translation, Rotation, MoveSpeed>
@@ -28,7 +29,6 @@ namespace Unity.Transforms
 
 		protected override JobHandle OnUpdate(JobHandle inputDeps)
 		{
-
 			var moveForwardRotationJob = new MoveForwardRotation
 			{
 				dt = Time.deltaTime

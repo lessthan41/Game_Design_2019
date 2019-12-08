@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class background_stage1 : MonoBehaviour
+public class Background_stage1 : MonoBehaviour
 {
 
     void Start ()

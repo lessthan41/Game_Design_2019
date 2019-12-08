@@ -9,7 +9,7 @@ public class SceneSwitch_stage1 : MonoBehaviour
 
     public void Update ()
     {
-        if (Done_GameController.score >= Done_GameController.WIN_SCORE)
+        if (Done_GameController_stage1.time <= 0 && Done_GameController_stage1.gameOver == false)
         {
             fade();
         }

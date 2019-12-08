@@ -67,7 +67,7 @@ public class CollisionSystem : JobComponentSystem
 		var translationType = GetArchetypeChunkComponentType<Translation>(true);
 
 		float enemyRadius = 1;
-		float playerRadius = 1;
+		float playerRadius = 0.8f;
 
 		JobHandle jobHandle = new JobHandle();
 
