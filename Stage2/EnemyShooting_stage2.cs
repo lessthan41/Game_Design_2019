@@ -5,7 +5,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-public class EnemyShooting_stage1 : MonoBehaviour
+public class EnemyShooting_stage2 : MonoBehaviour
 {
     public Transform enemyShotSpawn;
     public GameObject shot;
@@ -29,29 +29,29 @@ public class EnemyShooting_stage1 : MonoBehaviour
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
         nextFire1 = Time.time + Done_GameController_stage1.startWait;
-        nextFire2 = Time.time + Done_GameController_stage1.startWait + 10;
-        nextFire3 = Time.time + Done_GameController_stage1.startWait + 20;
-        haveAccelerate = false;
+        nextFire2 = Time.time + Done_GameController_stage1.startWait + 5;
+        nextFire3 = Time.time + Done_GameController_stage1.startWait + 7;
+        // haveAccelerate = false;
     }
 
     void Update()
     {
         if (enemyShotSpawn.position != shotSpawnRecorder)
         {
-            enemyShotSpawn.position = shotSpawnRecorder + new Vector3 (-1f, 0f, 1f);
+            enemyShotSpawn.position = shotSpawnRecorder - new Vector3 (-1f, 0f, 1f);
         }
 
-        // 30秒後提高難度
-        if (Done_GameController_stage1.time == 30 && haveAccelerate == false)
-        {
-            haveAccelerate = true;
-            EnemyFireRate1 /= 1;
-            EnemyFireRate2 /= 1.7f;
-            EnemyFireRate3 /= 1.7f;
-            spreadAmount_round *= 2;
-            spreadAmount_spawn *= 2;
-        }
-
+        // // 30秒後提高難度
+        // if (Done_GameController_stage1.time == 30 && haveAccelerate == false)
+        // {
+        //     haveAccelerate = true;
+        //     EnemyFireRate1 /= 1;
+        //     EnemyFireRate2 /= 1.7f;
+        //     EnemyFireRate3 /= 1.7f;
+        //     spreadAmount_round *= 2;
+        //     spreadAmount_spawn *= 2;
+        // }
+        //
         if (Time.time > nextFire1 && Done_GameController_stage1.gameOver == false)
 		{
             nextFire1 = Time.time + EnemyFireRate1 * UnityEngine.Random.Range(0.25f, 1f);

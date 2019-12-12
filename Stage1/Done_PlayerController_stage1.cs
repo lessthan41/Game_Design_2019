@@ -24,13 +24,17 @@ public class Done_PlayerController_stage1 : MonoBehaviour
 	public float fireRate;
 	public float switchRate;
     public float playerHealth;
+	public float textureSwitchRate;
 	public int spreadAmount_spawn;
 	public int spreadAmount_round;
 	public int fireMode;
+	public Texture texture1;
+	public Texture texture2;
 
 	// Code Calculate Need
 	private float nextFire;
-	private float nextSwitch;
+	private float nextTextureSwitch;
+	private int textureCnt;
 	public static float3 playerPosition;
 
     EntityManager manager;
@@ -40,9 +44,26 @@ public class Done_PlayerController_stage1 : MonoBehaviour
     {
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
+		nextTextureSwitch = Time.time + textureSwitchRate;
+		textureCnt = 0;
     }
 
-    void Update () { }
+    void Update ()
+	{
+		if (Done_GameController_stage1.gameOver == false && Time.time >= nextTextureSwitch)
+		{
+			nextTextureSwitch = Time.time + textureSwitchRate;
+			if (textureCnt == 0)
+			{
+				GetComponent<Renderer>().material.mainTexture = texture2;
+			}
+			else
+			{
+				GetComponent<Renderer>().material.mainTexture = texture1;
+			}
+			textureCnt = (textureCnt == 0) ? 1 : 0;
+		}
+	}
 
 	void FixedUpdate ()
 	{

@@ -12,7 +12,7 @@ namespace Unity.Transforms
 
 		[BurstCompile]
 		[RequireComponentTag(typeof(BossMoving))]
-		struct MoveForwardRotation : IJobForEach<Translation, Rotation, MoveSpeed>
+		struct BossMovingRotation : IJobForEach<Translation, Rotation, MoveSpeed>
 		{
 			public float dt;
 
@@ -29,7 +29,7 @@ namespace Unity.Transforms
 
 		protected override JobHandle OnUpdate(JobHandle inputDeps)
 		{
-			var moveForwardRotationJob = new MoveForwardRotation
+			var moveForwardRotationJob = new BossMovingRotation
 			{
 				dt = Time.deltaTime
 			};

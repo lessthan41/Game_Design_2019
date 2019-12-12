@@ -17,7 +17,7 @@ public class AccelerateSystem : JobComponentSystem
         haveAccelerate = false;
 	}
 
-	struct CullingJob : IJobForEachWithEntity<MoveSpeed, EnemyTag>
+	struct AccelerateJob : IJobForEachWithEntity<MoveSpeed, EnemyTag>
 	{
 		public EntityCommandBuffer.Concurrent commands;
 
@@ -32,15 +32,19 @@ public class AccelerateSystem : JobComponentSystem
         JobHandle handle = new JobHandle ();
 
         // stage1 最後30秒加速
-        if (Done_GameController_stage1.time == 30 && haveAccelerate == false)
+        if (Done_GameController_stage1.time <= 30 && haveAccelerate == false)
         {
             haveAccelerate = true;
-            var job = new CullingJob
+            var job = new AccelerateJob
     		{
     			commands = buffer.CreateCommandBuffer().ToConcurrent(),
     		};
             handle = job.Schedule(this, inputDeps);
         }
+
+		// for restart
+		if (Done_GameController_stage1.time > 30 && haveAccelerate == true)
+			haveAccelerate = false;
 
 		buffer.AddJobHandleForProducer(handle);
 

@@ -15,9 +15,9 @@ public class RemoveDeadSystem : ComponentSystem
 				if (EntityManager.HasComponent(entity, typeof(EnemyTag)))
 				{
 					PostUpdateCommands.DestroyEntity(entity);
-					Done_GameController.AddScore(10);
+					Done_GameController_stage2.AddScore(10);
 				}
-				else if (EntityManager.HasComponent(entity, typeof(BulletTag)))
+				else if (EntityManager.HasComponent(entity, typeof(PlayerBulletTag)))
 				{
 					PostUpdateCommands.DestroyEntity(entity);
 				}

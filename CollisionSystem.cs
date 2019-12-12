@@ -13,13 +13,15 @@ using UnityEngine.SceneManagement;
 public class CollisionSystem : JobComponentSystem
 {
 	EntityQuery enemyGroup;
-	EntityQuery bulletGroup;
+	EntityQuery enemyBulletGroup;
+	EntityQuery playerBulletGroup;
 
 	protected override void OnCreate()
 	{
 		// 搜出所有帶有以下特質的Entity
 		enemyGroup = GetEntityQuery(typeof(Health), ComponentType.ReadOnly<Translation>(), ComponentType.ReadOnly<EnemyTag>());
-		bulletGroup = GetEntityQuery(typeof(Health), ComponentType.ReadOnly<Translation>(), ComponentType.ReadOnly<BulletTag>());
+		enemyBulletGroup = GetEntityQuery(typeof(Health), ComponentType.ReadOnly<Translation>(), ComponentType.ReadOnly<EnemyBulletTag>());
+		playerBulletGroup = GetEntityQuery(typeof(Health), ComponentType.ReadOnly<Translation>(), ComponentType.ReadOnly<PlayerBulletTag>());
 	}
 
 	[BurstCompile]
@@ -71,7 +73,7 @@ public class CollisionSystem : JobComponentSystem
 
 		JobHandle jobHandle = new JobHandle();
 
-		if (SceneManager.GetActiveScene().buildIndex != 2) // if stage 1
+		if (SceneManager.GetActiveScene().buildIndex != 2) // if not stage 1
 		{
 			// 處理敵機損血
 			var jobEvB = new CollisionJob()
@@ -79,7 +81,7 @@ public class CollisionSystem : JobComponentSystem
 				radius = enemyRadius * enemyRadius,
 				healthType = healthType,
 				translationType = translationType,
-				transToTestAgainst = bulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob)
+				transToTestAgainst = playerBulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob)
 			};
 
 			jobHandle = jobEvB.Schedule(enemyGroup, inputDependencies);
@@ -93,31 +95,35 @@ public class CollisionSystem : JobComponentSystem
 				transToTestAgainst = enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob)
 			};
 
-			jobHandle = jobBvE.Schedule(bulletGroup, jobHandle);
+			jobHandle = jobBvE.Schedule(playerBulletGroup, jobHandle);
 		}
 
 		// 處理玩家撞敵機
-		NativeArray<Translation> enemyPosition;
+		NativeArray<Translation> enemyBulletPosition;
+		// NativeArray<Translation> enemyPosition;
 		bool gameOver = false;
 
 		if (SceneManager.GetActiveScene().buildIndex == 2) // if stage 1
-			enemyPosition = bulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
+			enemyBulletPosition = enemyBulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
 		else // other stage
-			enemyPosition = enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
+		{
+			enemyBulletPosition = enemyBulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
+			// enemyPosition = enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
+		}
 
 
-		for (int i = 0; i < enemyPosition.Length; i++)
+		for (int i = 0; i < enemyBulletPosition.Length; i++)
 		{
 			float dx, dz;
 			if (SceneManager.GetActiveScene().buildIndex == 2)
 			{
-				dx = Done_PlayerController_stage1.playerPosition.x - enemyPosition[i].Value.x;
-				dz = Done_PlayerController_stage1.playerPosition.z - enemyPosition[i].Value.z;
+				dx = Done_PlayerController_stage1.playerPosition.x - enemyBulletPosition[i].Value.x;
+				dz = Done_PlayerController_stage1.playerPosition.z - enemyBulletPosition[i].Value.z;
 			}
 			else
 			{
-				dx = Done_PlayerController.playerPosition.x - enemyPosition[i].Value.x;
-				dz = Done_PlayerController.playerPosition.z - enemyPosition[i].Value.z;
+				dx = Done_PlayerController_stage2.playerPosition.x - enemyBulletPosition[i].Value.x;
+				dz = Done_PlayerController_stage2.playerPosition.z - enemyBulletPosition[i].Value.z;
 			}
 
 			if (dx * dx + dz * dz <= playerRadius)
@@ -126,9 +132,34 @@ public class CollisionSystem : JobComponentSystem
 				if (SceneManager.GetActiveScene().buildIndex == 2)
 					Done_GameController_stage1.gameOver = true;
 				else
-					Done_GameController.gameOver = true;
+					Done_GameController_stage2.gameOver = true;
 			}
 		}
+
+
+		// for (int i = 0; i < enemyPosition.Length; i++)
+		// {
+		// 	float dx, dz;
+		// 	if (SceneManager.GetActiveScene().buildIndex == 2)
+		// 	{
+		// 		dx = Done_PlayerController_stage1.playerPosition.x - enemyPosition[i].Value.x;
+		// 		dz = Done_PlayerController_stage1.playerPosition.z - enemyPosition[i].Value.z;
+		// 	}
+		// 	else
+		// 	{
+		// 		dx = Done_PlayerController_stage2.playerPosition.x - enemyPosition[i].Value.x;
+		// 		dz = Done_PlayerController_stage2.playerPosition.z - enemyPosition[i].Value.z;
+		// 	}
+		//
+		// 	if (dx * dx + dz * dz <= playerRadius)
+		// 	{
+		// 		gameOver = true;
+		// 		if (SceneManager.GetActiveScene().buildIndex == 2)
+		// 			Done_GameController_stage1.gameOver = true;
+		// 		else
+		// 			Done_GameController_stage2.gameOver = true;
+		// 	}
+		// }
 
 		// If GameOver 就刪除所有的敵機 & 玩家
 		if (gameOver)
@@ -136,7 +167,8 @@ public class CollisionSystem : JobComponentSystem
 			Object.Destroy(GameObject.Find("Done_Player")); // Delete Player
 		}
 
-		enemyPosition.Dispose();
+		// enemyPosition.Dispose();
+		enemyBulletPosition.Dispose();
 
 		return jobHandle;
 	}

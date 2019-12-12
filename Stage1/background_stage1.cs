@@ -19,7 +19,7 @@ public class Background_stage1 : MonoBehaviour
 
     void FixedUpdate ()
     {
-        Vector3 temp = new Vector3(0,0,-0.1f);
+        Vector3 temp = new Vector3(0,0,-0.2f);
         transform.position += temp;
     }
 
