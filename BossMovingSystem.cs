@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.Transforms
 {
@@ -34,7 +35,10 @@ namespace Unity.Transforms
 				dt = Time.deltaTime
 			};
 
-			return moveForwardRotationJob.Schedule(this, inputDeps);
+			if (SceneManager.GetActiveScene().buildIndex == 2 || Done_GameController_stage2.bossShow == true)
+				return moveForwardRotationJob.Schedule(this, inputDeps);
+			else
+				return inputDeps;
 		}
 	}
 }

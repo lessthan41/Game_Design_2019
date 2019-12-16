@@ -14,43 +14,49 @@ public class Done_GameController_stage2 : MonoBehaviour
     // 產生怪物間隔時間
     public float spawnWait;
     // 遊戲開始間隔時間
-    public float startWait;
+    public float GameStartWait;
     // 每波怪物間隔時間
     public float waveWait;
+    public float bossWait;
 
     public Text scoreText;
     public Text restartText;
     public Text gameOverText;
 
     public static bool gameOver;
-    public static bool gameStart;
-    public static int WIN_SCORE = 100;
+    public static int WIN_SCORE;
     public static int score;
+    public static float startWait;
+    public static bool bossShow;
+    public static bool ranpage;
 
     public int recordScore;
     private bool restart;
+    [SerializeField] private HealthBar healthBar;
 
     EntityManager manager;
 
     Entity enemyEntityPrefab0;
     Entity enemyEntityPrefab1;
-    Entity enemyEntityPrefab2;
-    Entity enemyEntityPrefab3;
 
     void Start()
     {
         manager = World.Active.EntityManager;
         enemyEntityPrefab0 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[0], World.Active);
-        // enemyEntityPrefab1 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[1], World.Active);
-        // enemyEntityPrefab2 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[2], World.Active);
-        // enemyEntityPrefab3 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[3], World.Active);
+        enemyEntityPrefab1 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[1], World.Active);
 
+        startWait = GameStartWait;
         gameOver = false;
+        WIN_SCORE = 9999;
+        score = 0;
+        bossShow = false;
+        ranpage = false;
         restart = false;
+
         restartText.text = "";
         gameOverText.text = "";
         recordScore = 0;
-        score = 0;
+
         UpdateScore();
         StartCoroutine(SpawnWaves());
     }
@@ -69,9 +75,12 @@ public class Done_GameController_stage2 : MonoBehaviour
         // show gameOver or not
         if (gameOver)
         {
+            EnemyShooting_stage2.startShooting = false;
             if (score < WIN_SCORE)
             {
                 GameOver();
+                restartText.text = "Press 'R' for Restart";
+                restart = true;
             }
         }
 
@@ -92,12 +101,15 @@ public class Done_GameController_stage2 : MonoBehaviour
     IEnumerator SpawnWaves()
     {
         yield return new WaitForSeconds(startWait);
-        while (true)
+        EnemyShooting_stage2.startShooting = true;
+
+        Quaternion spawnRotation = Quaternion.identity;
+
+        for (int round = 0; round < 0; round++)
         {
             for (int i = 0; i < hazardCount; i++)
             {
                 Vector3 spawnPosition = new Vector3(Random.Range(-spawnValues.x, spawnValues.x), spawnValues.y, spawnValues.z);
-                Quaternion spawnRotation = Quaternion.identity;
 
                 Entity enemy = manager.Instantiate(enemyEntityPrefab0);
                 manager.SetComponentData(enemy, new Translation { Value = spawnPosition });
@@ -107,19 +119,60 @@ public class Done_GameController_stage2 : MonoBehaviour
             }
 
             yield return new WaitForSeconds(waveWait);
-
-            if (gameOver)
-            {
-                restartText.text = "Press 'R' for Restart";
-                restart = true;
-                break;
-            }
         }
+
+        EnemyShooting_stage2.startShooting = false;
+        HealthBar.showHealth = true;
+
+        yield return new WaitForSeconds(bossWait);
+
+        // Boss
+        Entity boss = manager.Instantiate(enemyEntityPrefab1);
+        manager.SetComponentData(boss, new Translation { Value = new Vector3(0f, 0f, 18f) });
+        manager.SetComponentData(boss, new Rotation { Value = Quaternion.Normalize(spawnRotation) });
+
+        yield return new WaitForSeconds(3);
+
+        bossShow = true;
+        EnemyShooting_stage2.startShooting = true;
+
+
+        while (true)
+        {
+            EnemyShooting_stage2.isLaser = true;
+
+            // laser
+            yield return new WaitForSeconds(5);
+            EnemyShooting_stage2.isLaser = false;
+
+            yield return new WaitForSeconds(3);
+            EnemyShooting_stage2.isUnit = false;
+            EnemyShooting_stage2.isSpawn = true;
+
+            // spawn
+            yield return new WaitForSeconds(3);
+            EnemyShooting_stage2.isSpawn = false;
+            EnemyShooting_stage2.isUnit = true;
+
+            yield return new WaitForSeconds(3);
+            EnemyShooting_stage2.isUnit = false;
+            EnemyShooting_stage2.isRound = true;
+
+            // round
+            yield return new WaitForSeconds(10);
+            EnemyShooting_stage2.isRound = false;
+            EnemyShooting_stage2.isUnit = true;
+
+            yield return new WaitForSeconds(2);
+        }
+
     }
 
     public static void AddScore(int newScoreValue)
     {
         score += newScoreValue;
+        if (score > 9999)
+            score = 9999;
     }
 
     void UpdateScore()

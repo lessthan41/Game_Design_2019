@@ -75,6 +75,13 @@ public class CollisionSystem : JobComponentSystem
 
 		if (SceneManager.GetActiveScene().buildIndex != 2) // if not stage 1
 		{
+			// 改 BOSS & 玩家 的 Raduis
+			if (Done_GameController_stage2.bossShow == true)
+			{
+				enemyRadius *= 3f;
+				playerRadius /= 2f;
+			}
+
 			// 處理敵機損血
 			var jobEvB = new CollisionJob()
 			{
@@ -96,20 +103,16 @@ public class CollisionSystem : JobComponentSystem
 			};
 
 			jobHandle = jobBvE.Schedule(playerBulletGroup, jobHandle);
+
 		}
 
 		// 處理玩家撞敵機
 		NativeArray<Translation> enemyBulletPosition;
-		// NativeArray<Translation> enemyPosition;
+		NativeArray<Translation> enemyPosition;
 		bool gameOver = false;
 
-		if (SceneManager.GetActiveScene().buildIndex == 2) // if stage 1
-			enemyBulletPosition = enemyBulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
-		else // other stage
-		{
-			enemyBulletPosition = enemyBulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
-			// enemyPosition = enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
-		}
+		enemyBulletPosition = enemyBulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
+		enemyPosition = enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
 
 
 		for (int i = 0; i < enemyBulletPosition.Length; i++)
@@ -137,29 +140,32 @@ public class CollisionSystem : JobComponentSystem
 		}
 
 
-		// for (int i = 0; i < enemyPosition.Length; i++)
-		// {
-		// 	float dx, dz;
-		// 	if (SceneManager.GetActiveScene().buildIndex == 2)
-		// 	{
-		// 		dx = Done_PlayerController_stage1.playerPosition.x - enemyPosition[i].Value.x;
-		// 		dz = Done_PlayerController_stage1.playerPosition.z - enemyPosition[i].Value.z;
-		// 	}
-		// 	else
-		// 	{
-		// 		dx = Done_PlayerController_stage2.playerPosition.x - enemyPosition[i].Value.x;
-		// 		dz = Done_PlayerController_stage2.playerPosition.z - enemyPosition[i].Value.z;
-		// 	}
-		//
-		// 	if (dx * dx + dz * dz <= playerRadius)
-		// 	{
-		// 		gameOver = true;
-		// 		if (SceneManager.GetActiveScene().buildIndex == 2)
-		// 			Done_GameController_stage1.gameOver = true;
-		// 		else
-		// 			Done_GameController_stage2.gameOver = true;
-		// 	}
-		// }
+		if (SceneManager.GetActiveScene().buildIndex != 2) // if not stage 1 detect
+		{
+			for (int i = 0; i < enemyPosition.Length; i++)
+			{
+				float dx, dz;
+				if (SceneManager.GetActiveScene().buildIndex == 2)
+				{
+					dx = Done_PlayerController_stage1.playerPosition.x - enemyPosition[i].Value.x;
+					dz = Done_PlayerController_stage1.playerPosition.z - enemyPosition[i].Value.z;
+				}
+				else
+				{
+					dx = Done_PlayerController_stage2.playerPosition.x - enemyPosition[i].Value.x;
+					dz = Done_PlayerController_stage2.playerPosition.z - enemyPosition[i].Value.z;
+				}
+
+				if (dx * dx + dz * dz <= playerRadius + enemyRadius)
+				{
+					gameOver = true;
+					if (SceneManager.GetActiveScene().buildIndex == 2)
+					Done_GameController_stage1.gameOver = true;
+					else
+					Done_GameController_stage2.gameOver = true;
+				}
+			}
+		}
 
 		// If GameOver 就刪除所有的敵機 & 玩家
 		if (gameOver)
@@ -167,7 +173,7 @@ public class CollisionSystem : JobComponentSystem
 			Object.Destroy(GameObject.Find("Done_Player")); // Delete Player
 		}
 
-		// enemyPosition.Dispose();
+		enemyPosition.Dispose();
 		enemyBulletPosition.Dispose();
 
 		return jobHandle;

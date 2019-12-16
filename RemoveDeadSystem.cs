@@ -12,7 +12,12 @@ public class RemoveDeadSystem : ComponentSystem
 		{
 			if (health.Value <= 0)
 			{
-				if (EntityManager.HasComponent(entity, typeof(EnemyTag)))
+				if (EntityManager.HasComponent(entity, typeof(BossMoving)))
+				{
+					PostUpdateCommands.DestroyEntity(entity);
+					Done_GameController_stage2.AddScore(9999);
+				}
+				else if (EntityManager.HasComponent(entity, typeof(EnemyTag)))
 				{
 					PostUpdateCommands.DestroyEntity(entity);
 					Done_GameController_stage2.AddScore(10);
@@ -22,6 +27,14 @@ public class RemoveDeadSystem : ComponentSystem
 					PostUpdateCommands.DestroyEntity(entity);
 				}
 			}
+
+			// if gameover delete entity
+			if (GameObject.Find("Done_Player") == null)
+			{
+				// if (!EntityManager.HasComponent(entity, typeof(BossTag)))
+					PostUpdateCommands.DestroyEntity(entity);
+			}
+			
 		});
 	}
 }

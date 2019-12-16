@@ -9,9 +9,10 @@ public class EnemyBehaviour_stage1 : MonoBehaviour, IConvertGameObjectToEntity
 {
 	// 自訂參數 (敵機飛行速度、敵機血量、生存時間)
 	public GameObject shot;
+	public Entity enemyBulletEntityPrefab;
+	public Texture[] textures;
 	public float stage1EnemySpeed;
 	public float enemyHealth;
-	public Entity enemyBulletEntityPrefab;
 
 	EntityManager manager;
 
@@ -25,5 +26,9 @@ public class EnemyBehaviour_stage1 : MonoBehaviour, IConvertGameObjectToEntity
 
 		MoveSpeed moveSpeed = new MoveSpeed { Value = stage1EnemySpeed };
 		manager.AddComponentData(entity, moveSpeed);
+
+		// SharedMaterial.texture_stage1 = textures;
+		// TextureSwitch textureSwitch = new TextureSwitch { textureArray = textures };
+		// manager.AddComponentData(entity, textureSwitch);
     }
 }

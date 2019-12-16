@@ -51,7 +51,7 @@ public class Done_PlayerController_stage2 : MonoBehaviour
 			fireMode = (fireMode == 3) ? 1 : (fireMode + 1);
 		}
 
-		if (Input.GetKey("space") && Time.time > nextFire)
+		if (Input.GetKeyDown("space") && Time.time > nextFire)
 		{
 			nextFire = Time.time + fireRate;
 

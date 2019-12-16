@@ -12,6 +12,7 @@ public class Done_Mover_Player : MonoBehaviour, IConvertGameObjectToEntity
     {
         manager.AddComponent(entity, typeof(MoveForward));
         manager.AddComponent(entity, typeof(PlayerBulletTag));
+		manager.AddComponent(entity, typeof(BulletTag));
 
         MoveSpeed moveSpeed = new MoveSpeed { Value = speed };
         manager.AddComponentData(entity, moveSpeed);

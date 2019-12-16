@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.Transforms
 {
@@ -21,6 +22,18 @@ namespace Unity.Transforms
 			}
 		}
 
+		[BurstCompile]
+		[RequireComponentTag(typeof(BulletTag))]
+		struct BulletMoveForwardRotation : IJobForEach<Translation, Rotation, MoveSpeed>
+		{
+			public float dt;
+
+			public void Execute(ref Translation pos, [ReadOnly] ref Rotation rot, [ReadOnly] ref MoveSpeed speed)
+			{
+				pos.Value = pos.Value + (dt * speed.Value * math.forward(rot.Value));
+			}
+		}
+
 		protected override JobHandle OnUpdate(JobHandle inputDeps)
 		{
 			var moveForwardRotationJob = new MoveForwardRotation
@@ -28,7 +41,15 @@ namespace Unity.Transforms
 				dt = Time.deltaTime
 			};
 
-			return moveForwardRotationJob.Schedule(this, inputDeps);
+			var bulletMoveForwardRotationJob = new BulletMoveForwardRotation
+			{
+				dt = Time.deltaTime
+			};
+
+			if (Done_GameController_stage2.bossShow == true)
+				return bulletMoveForwardRotationJob.Schedule(this, inputDeps);
+			else
+				return moveForwardRotationJob.Schedule(this, inputDeps);
 		}
 	}
 }
