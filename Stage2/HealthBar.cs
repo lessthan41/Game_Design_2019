@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HealthBar : MonoBehaviour
 {
-    [SerializeField] private Animator healthBarAnimator;
+    public Animator healthBarAnimator;
 
     public static bool showHealth;
     public static float scaleForSet;

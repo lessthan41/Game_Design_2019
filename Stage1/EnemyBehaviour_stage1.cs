@@ -5,30 +5,89 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-public class EnemyBehaviour_stage1 : MonoBehaviour, IConvertGameObjectToEntity
+// public class EnemyBehaviour_stage1 : MonoBehaviour, IConvertGameObjectToEntity
+public class EnemyBehaviour_stage1 : MonoBehaviour
 {
-	// 自訂參數 (敵機飛行速度、敵機血量、生存時間)
-	public GameObject shot;
-	public Entity enemyBulletEntityPrefab;
-	public Texture[] textures;
-	public float stage1EnemySpeed;
-	public float enemyHealth;
+	public float boySpeedx;
+	public float boySpeedz;
 
-	EntityManager manager;
+	public float textureSwitchRate;
+	public Texture texture1;
+	public Texture texture2;
 
-	public void Convert(Entity entity, EntityManager manager, GameObjectConversionSystem conversionSystem)
+	private int textureCnt;
+	private float nextTextureSwitch;
+	private float speedSwitchRate;
+	private float nextSpeedSwitchZ;
+	private bool haveAccelerate;
+
+	private void Start ()
 	{
-	    manager.AddComponent(entity, typeof(EnemyTag));
-		manager.AddComponent(entity, typeof(BossMoving));
+		textureCnt = 0;
+		nextTextureSwitch = Time.time + textureSwitchRate;
+		speedSwitchRate = 1.5f;
+		nextSpeedSwitchZ = Time.time + speedSwitchRate;
+		haveAccelerate = false;
+	}
 
-	    Health health = new Health { Value = enemyHealth };
-	    manager.AddComponentData(entity, health);
+	private void Update ()
+	{
+		SwitchTexture ();
+		SwitchDirection ();
+		Moving ();
+		Accelerate ();
+		EnemyShooting_stage1.SetPosition (transform.Find("Shot Spawn").transform.position);
+	}
 
-		MoveSpeed moveSpeed = new MoveSpeed { Value = stage1EnemySpeed };
-		manager.AddComponentData(entity, moveSpeed);
+	private void SwitchTexture ()
+	{
+		if (Done_GameController_stage1.gameOver == false && Time.time >= nextTextureSwitch)
+		{
+			nextTextureSwitch = Time.time + textureSwitchRate;
+			if (textureCnt == 0)
+			{
+				GetComponent<Renderer>().material.mainTexture = texture2;
+			}
+			else
+			{
+				GetComponent<Renderer>().material.mainTexture = texture1;
+			}
+			textureCnt = (textureCnt == 0) ? 1 : 0;
+		}
+	}
 
-		// SharedMaterial.texture_stage1 = textures;
-		// TextureSwitch textureSwitch = new TextureSwitch { textureArray = textures };
-		// manager.AddComponentData(entity, textureSwitch);
-    }
+	private void Moving ()
+	{
+		GetComponent<Transform>().position += new Vector3 (boySpeedx, 0f, boySpeedz);
+	}
+
+	private void SwitchDirection ()
+	{
+		if (GetComponent<Transform>().position.x >= 5f || GetComponent<Transform>().position.x <= -5f)
+		{
+			if (GetComponent<Transform>().position.x * boySpeedx > 0f)
+			{
+				boySpeedx = -boySpeedx;
+			}
+		}
+
+		if (GetComponent<Transform>().position.z >= -1f || GetComponent<Transform>().position.z <= -2f)
+		{
+			if (Time.time >= nextSpeedSwitchZ)
+			{
+				nextSpeedSwitchZ = Time.time + speedSwitchRate;
+				boySpeedz = -boySpeedz;
+			}
+		}
+	}
+
+	private void Accelerate ()
+	{
+		if (Done_GameController_stage1.time <= 30 && haveAccelerate == false)
+		{
+			haveAccelerate = true;
+			boySpeedx *= 2;
+			boySpeedz *= 2;
+		}
+	}
 }

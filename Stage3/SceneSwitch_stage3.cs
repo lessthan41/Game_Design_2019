@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneSwitch_stage2 : MonoBehaviour
+public class SceneSwitch_stage3 : MonoBehaviour
 {
     public Animator animator;
-    public Done_GameController_stage2 game;
+    public Done_GameController_stage3 game;
 
     public void Update ()
     {

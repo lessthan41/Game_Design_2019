@@ -14,28 +14,26 @@ public class Done_GameController_stage2 : MonoBehaviour
     // 產生怪物間隔時間
     public float spawnWait;
     // 遊戲開始間隔時間
-    public float GameStartWait;
+    public float startWait;
     // 每波怪物間隔時間
     public float waveWait;
     public float bossWait;
+    public int WIN_SCORE;
 
     public Text scoreText;
     public Text restartText;
     public Text gameOverText;
 
     public static bool gameOver;
-    public static int WIN_SCORE;
     public static int score;
-    public static float startWait;
     public static bool bossShow;
     public static bool ranpage;
 
-    public int recordScore;
+    private int recordScore;
     private bool restart;
     [SerializeField] private HealthBar healthBar;
 
     EntityManager manager;
-
     Entity enemyEntityPrefab0;
     Entity enemyEntityPrefab1;
 
@@ -45,7 +43,6 @@ public class Done_GameController_stage2 : MonoBehaviour
         enemyEntityPrefab0 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[0], World.Active);
         enemyEntityPrefab1 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[1], World.Active);
 
-        startWait = GameStartWait;
         gameOver = false;
         WIN_SCORE = 9999;
         score = 0;
@@ -96,6 +93,12 @@ public class Done_GameController_stage2 : MonoBehaviour
         {
             gameOver = true;
         }
+
+        // 金手指
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            score = 9999;
+        }
     }
 
     IEnumerator SpawnWaves()
@@ -105,7 +108,7 @@ public class Done_GameController_stage2 : MonoBehaviour
 
         Quaternion spawnRotation = Quaternion.identity;
 
-        for (int round = 0; round < 0; round++)
+        for (int round = 0; round < 4; round++)
         {
             for (int i = 0; i < hazardCount; i++)
             {
@@ -168,6 +171,26 @@ public class Done_GameController_stage2 : MonoBehaviour
 
     }
 
+    public int GetScore ()
+    {
+        return score;
+    }
+
+    public int GetWinScore ()
+    {
+        return WIN_SCORE;
+    }
+
+    public bool GetGameStatus ()
+    {
+        return gameOver;
+    }
+
+    public float GetStartWait ()
+    {
+        return startWait;
+    }
+
     public static void AddScore(int newScoreValue)
     {
         score += newScoreValue;
@@ -183,6 +206,6 @@ public class Done_GameController_stage2 : MonoBehaviour
     public void GameOver()
     {
         gameOverText.text = "Game Over!";
-        // gameOver = true;
     }
+
 }

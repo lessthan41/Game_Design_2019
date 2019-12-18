@@ -23,6 +23,18 @@ public class BossHealthSystem : ComponentSystem
                         Done_GameController_stage2.ranpage = true;
                     }
                 }
+
+				// stage 3
+                else if (SceneManager.GetActiveScene().buildIndex == 6)
+                {
+					HealthBar.SetSize (health.Value / 300f);
+
+                    // ranpage
+                    // if (health.Value <= 60)
+                    // {
+                    //     Done_GameController_stage2.ranpage = true;
+                    // }
+                }
 			}
 		});
 	}

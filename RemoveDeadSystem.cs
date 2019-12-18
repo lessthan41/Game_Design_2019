@@ -16,6 +16,7 @@ public class RemoveDeadSystem : ComponentSystem
 				{
 					PostUpdateCommands.DestroyEntity(entity);
 					Done_GameController_stage2.AddScore(9999);
+					Done_GameController_stage3.AddScore(9999);
 				}
 				else if (EntityManager.HasComponent(entity, typeof(EnemyTag)))
 				{
@@ -31,10 +32,9 @@ public class RemoveDeadSystem : ComponentSystem
 			// if gameover delete entity
 			if (GameObject.Find("Done_Player") == null)
 			{
-				// if (!EntityManager.HasComponent(entity, typeof(BossTag)))
-					PostUpdateCommands.DestroyEntity(entity);
+				PostUpdateCommands.DestroyEntity(entity);
 			}
-			
+
 		});
 	}
 }

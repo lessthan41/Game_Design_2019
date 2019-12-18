@@ -38,7 +38,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
     {
         if (enemyShotSpawn.position != shotSpawnRecorder)
         {
-            enemyShotSpawn.position = shotSpawnRecorder + new Vector3 (-1f, 0f, 1f);
+            enemyShotSpawn.position = shotSpawnRecorder;
         }
 
         // 30秒後提高難度
@@ -46,8 +46,8 @@ public class EnemyShooting_stage1 : MonoBehaviour
         {
             haveAccelerate = true;
             EnemyFireRate1 /= 1;
-            EnemyFireRate2 /= 1.7f;
-            EnemyFireRate3 /= 1.7f;
+            EnemyFireRate2 /= 1.1f;
+            EnemyFireRate3 /= 1.1f;
             spreadAmount_round *= 2;
             spreadAmount_spawn *= 2;
         }
@@ -107,7 +107,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
 
         for (int y = min; y < max; y++)
         {
-            tempRot.y = (rotation.y + 3 * y) % 360;
+            tempRot.y = (rotation.y + 15 * y) % 360;
 
             manager.SetComponentData(bullets[index], new Translation { Value = enemyShotSpawn.position });
             manager.SetComponentData(bullets[index], new Rotation { Value = Quaternion.Euler(tempRot) });

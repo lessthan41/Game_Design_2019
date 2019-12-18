@@ -75,11 +75,18 @@ public class CollisionSystem : JobComponentSystem
 
 		if (SceneManager.GetActiveScene().buildIndex != 2) // if not stage 1
 		{
-			// 改 BOSS & 玩家 的 Raduis
+			// 改 stage2 BOSS & 玩家 的 Raduis
 			if (Done_GameController_stage2.bossShow == true)
 			{
 				enemyRadius *= 3f;
-				playerRadius /= 2f;
+				playerRadius /= 1.5f;
+			}
+
+			// 改 stage3 BOSS & 玩家 的 Raduis
+			if (Done_GameController_stage3.bossShow == true)
+			{
+				enemyRadius *= 1.5f;
+				playerRadius /= 1.5f;
 			}
 
 			// 處理敵機損血
@@ -114,6 +121,9 @@ public class CollisionSystem : JobComponentSystem
 		enemyBulletPosition = enemyBulletGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
 		enemyPosition = enemyGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
 
+		// if stage 1 easier
+		if (SceneManager.GetActiveScene().buildIndex == 2)
+			playerRadius /= 1.5f;
 
 		for (int i = 0; i < enemyBulletPosition.Length; i++)
 		{
@@ -134,8 +144,10 @@ public class CollisionSystem : JobComponentSystem
 				gameOver = true;
 				if (SceneManager.GetActiveScene().buildIndex == 2)
 					Done_GameController_stage1.gameOver = true;
-				else
+				else if (SceneManager.GetActiveScene().buildIndex == 4)
 					Done_GameController_stage2.gameOver = true;
+				else
+					Done_GameController_stage3.gameOver = true;
 			}
 		}
 
@@ -160,9 +172,11 @@ public class CollisionSystem : JobComponentSystem
 				{
 					gameOver = true;
 					if (SceneManager.GetActiveScene().buildIndex == 2)
-					Done_GameController_stage1.gameOver = true;
+						Done_GameController_stage1.gameOver = true;
+					else if (SceneManager.GetActiveScene().buildIndex == 4)
+						Done_GameController_stage2.gameOver = true;
 					else
-					Done_GameController_stage2.gameOver = true;
+						Done_GameController_stage3.gameOver = true;
 				}
 			}
 		}
@@ -171,6 +185,10 @@ public class CollisionSystem : JobComponentSystem
 		if (gameOver)
 		{
 			Object.Destroy(GameObject.Find("Done_Player")); // Delete Player
+			if (SceneManager.GetActiveScene().buildIndex == 2)
+			{
+				Object.Destroy(GameObject.Find("Boy_stage1")); // Delete Boy
+			}
 		}
 
 		enemyPosition.Dispose();

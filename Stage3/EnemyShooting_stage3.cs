@@ -5,25 +5,25 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-public class EnemyShooting_stage2 : MonoBehaviour
+public class EnemyShooting_stage3 : MonoBehaviour
 {
     public Transform enemyShotSpawn;
     public GameObject shot;
-    public Done_GameController_stage2 game;
+    public Done_GameController_stage3 game;
 
     public float speed;
     public float EnemyFireRate1;
     public float EnemyFireRate2;
     public float EnemyFireRate3;
+    public bool isLaser;
+    public bool isUnit;
+    public bool isSpawn;
+    public bool isRound;
+    public bool startShooting;
     public int spreadAmount_spawn;
     public int spreadAmount_round;
 
     public static Vector3 shotSpawnRecorder;
-    public static bool startShooting;
-    public static  bool isLaser;
-    public static  bool isUnit;
-    public static  bool isSpawn;
-    public static  bool isRound;
 
     private float nextFire1;
     private float nextFire2;
@@ -37,12 +37,7 @@ public class EnemyShooting_stage2 : MonoBehaviour
     {
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
-        nextFire1 = Time.time + game.GetStartWait() + 1;
-        startShooting = false;
-        isLaser = false;
-        isUnit = true;
-        isSpawn = false;
-        isRound = false;
+        nextFire1 = Time.time + game.GetStartWait () + 1;
         rotateDegree = 0f;
     }
 
@@ -84,12 +79,53 @@ public class EnemyShooting_stage2 : MonoBehaviour
                     Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
                     rotation.x = 0f;
                     rotation.y += rotateDegree;
-                    rotateDegree += 10;
+                    rotateDegree += 5; // turning
                     RoundBulletECS(rotation);
                     GetComponent<AudioSource>().Play ();
                 }
             }
         }
+    }
+
+    public void SetFireRate (int which, float rate)
+    {
+        // unit
+        if (which == 1)
+            EnemyFireRate1 = rate;
+        // spawn
+        else if (which == 2)
+            EnemyFireRate2 = rate;
+        // round
+        else
+            EnemyFireRate3 = rate;
+    }
+
+    public void SetSpawnAmount (int which, int num)
+    {
+        // spawn
+        if (which == 2)
+            spreadAmount_spawn = num;
+        // round
+        else
+            spreadAmount_round = num;
+    }
+
+    public void SetFireOrNot (string str, bool toSet)
+    {
+        // Unit
+        if (str == "unit")
+            isUnit = toSet;
+        // spawn
+        else if (str == "spawn")
+            isSpawn = toSet;
+        // round
+        else if (str == "round")
+            isRound = toSet;
+    }
+
+    public void SetStartShooting (bool toSet)
+    {
+        startShooting = toSet;
     }
 
     void UnitBulletECS(Vector3 rotation)
@@ -132,7 +168,6 @@ public class EnemyShooting_stage2 : MonoBehaviour
 
     void RoundBulletECS(Vector3 rotation)
     {
-
         Vector3 tempRot = rotation;
 
         NativeArray<Entity> bullets = new NativeArray<Entity>(spreadAmount_round, Allocator.TempJob);

@@ -35,7 +35,9 @@ namespace Unity.Transforms
 				dt = Time.deltaTime
 			};
 
-			if (SceneManager.GetActiveScene().buildIndex == 2 || Done_GameController_stage2.bossShow == true)
+			if (SceneManager.GetActiveScene().buildIndex == 2 ||
+				Done_GameController_stage2.bossShow == true ||
+				Done_GameController_stage3.bossMove == true)
 				return moveForwardRotationJob.Schedule(this, inputDeps);
 			else
 				return inputDeps;

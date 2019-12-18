@@ -28,10 +28,17 @@ public class Done_PlayerController_stage2 : MonoBehaviour
 	public int spreadAmount_round;
 	public int fireMode;
 
+	public float textureSwitchRate;
+	public Texture texture1;
+	public Texture texture2;
+
 	// Code Calculate Need
 	private float nextFire;
 	private float nextSwitch;
 	public static float3 playerPosition;
+
+	private int textureCnt;
+	private float nextTextureSwitch;
 
     EntityManager manager;
     Entity bulletEntityPrefab;
@@ -40,6 +47,8 @@ public class Done_PlayerController_stage2 : MonoBehaviour
     {
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
+
+		nextTextureSwitch = Time.time + textureSwitchRate;
     }
 
     void Update ()
@@ -90,6 +99,11 @@ public class Done_PlayerController_stage2 : MonoBehaviour
 			0.0f,
 			Mathf.Clamp (GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)
 		);
+
+		if (moveHorizontal != 0f || moveVertical != 0)
+		{
+			SwitchTexture ();
+		}
 
 		// 時刻紀錄位置 & 判定是否刪除玩家、結束遊戲
 		playerPosition = GetComponent<Rigidbody>().position;
@@ -151,5 +165,22 @@ public class Done_PlayerController_stage2 : MonoBehaviour
         }
         bullets.Dispose();
     }
+
+	private void SwitchTexture ()
+	{
+		if (Done_GameController_stage2.gameOver == false && Time.time >= nextTextureSwitch)
+		{
+			nextTextureSwitch = Time.time + textureSwitchRate;
+			if (textureCnt == 0)
+			{
+				GetComponent<Renderer>().material.mainTexture = texture2;
+			}
+			else
+			{
+				GetComponent<Renderer>().material.mainTexture = texture1;
+			}
+			textureCnt = (textureCnt == 0) ? 1 : 0;
+		}
+	}
 
 }

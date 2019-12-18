@@ -46,10 +46,18 @@ namespace Unity.Transforms
 				dt = Time.deltaTime
 			};
 
-			if (Done_GameController_stage2.bossShow == true)
-				return bulletMoveForwardRotationJob.Schedule(this, inputDeps);
-			else
-				return moveForwardRotationJob.Schedule(this, inputDeps);
+			if (SceneManager.GetActiveScene().buildIndex == 4)
+			{
+				if (Done_GameController_stage2.bossShow == true)
+					return bulletMoveForwardRotationJob.Schedule(this, inputDeps);
+			}
+			else if (SceneManager.GetActiveScene().buildIndex == 6)
+			{
+				if (Done_GameController_stage3.moveForward == false)
+					return bulletMoveForwardRotationJob.Schedule(this, inputDeps);
+			}
+
+			return moveForwardRotationJob.Schedule(this, inputDeps);
 		}
 	}
 }

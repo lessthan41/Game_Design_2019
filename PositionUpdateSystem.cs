@@ -26,11 +26,7 @@ public class PositionUpdateSystem : ComponentSystem
 		{
 			if (EntityManager.HasComponent(entity, typeof(EnemyTag)))
 			{
-				if (SceneManager.GetActiveScene().buildIndex == 2)
-				{
-					EnemyShooting_stage1.SetPosition (pos.Value);
-				}
-				else if (SceneManager.GetActiveScene().buildIndex == 4)
+				if (SceneManager.GetActiveScene().buildIndex == 4)
 				{
 					if (UnityEngine.Random.Range(0f, 1f) < prob || firstSet == true)
 						EnemyShooting_stage2.SetPosition (pos.Value);
@@ -39,6 +35,10 @@ public class PositionUpdateSystem : ComponentSystem
 					{
 						EnemyShooting_stage2.SetPosition (pos.Value);
 					}
+				}
+				else if (SceneManager.GetActiveScene().buildIndex == 6)
+				{
+					EnemyShooting_stage3.SetPosition (pos.Value);
 				}
 			}
 

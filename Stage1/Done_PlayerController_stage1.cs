@@ -50,19 +50,7 @@ public class Done_PlayerController_stage1 : MonoBehaviour
 
     void Update ()
 	{
-		if (Done_GameController_stage1.gameOver == false && Time.time >= nextTextureSwitch)
-		{
-			nextTextureSwitch = Time.time + textureSwitchRate;
-			if (textureCnt == 0)
-			{
-				GetComponent<Renderer>().material.mainTexture = texture2;
-			}
-			else
-			{
-				GetComponent<Renderer>().material.mainTexture = texture1;
-			}
-			textureCnt = (textureCnt == 0) ? 1 : 0;
-		}
+		SwitchTexture ();
 	}
 
 	void FixedUpdate ()
@@ -82,5 +70,22 @@ public class Done_PlayerController_stage1 : MonoBehaviour
 
 		// 時刻紀錄位置 & 判定是否刪除玩家、結束遊戲
 		playerPosition = GetComponent<Rigidbody>().position;
+	}
+
+	private void SwitchTexture ()
+	{
+		if (Done_GameController_stage1.gameOver == false && Time.time >= nextTextureSwitch)
+		{
+			nextTextureSwitch = Time.time + textureSwitchRate;
+			if (textureCnt == 0)
+			{
+				GetComponent<Renderer>().material.mainTexture = texture2;
+			}
+			else
+			{
+				GetComponent<Renderer>().material.mainTexture = texture1;
+			}
+			textureCnt = (textureCnt == 0) ? 1 : 0;
+		}
 	}
 }

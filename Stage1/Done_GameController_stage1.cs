@@ -69,19 +69,16 @@ public class Done_GameController_stage1 : MonoBehaviour
         {
             GameOver();
         }
+
+        // 金手指
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            time = 0;
+        }
     }
 
     IEnumerator SpawnWaves()
     {
-        // yield return new WaitForSeconds(startWait);
-
-        Vector3 spawnPosition = new Vector3(spawnValues.x, spawnValues.y, spawnValues.z);
-        Quaternion spawnRotation = Quaternion.identity;
-
-        Entity enemy = manager.Instantiate(enemyEntityPrefab);
-        manager.SetComponentData(enemy, new Translation { Value = spawnPosition });
-        manager.SetComponentData(enemy, new Rotation { Value = Quaternion.Normalize(spawnRotation) });
-
         while (true)
         {
             yield return new WaitForSeconds(checkWait);
