@@ -10,25 +10,38 @@ public class EnemyShooting_stage3 : MonoBehaviour
     public Transform enemyShotSpawn;
     public GameObject shot;
     public Done_GameController_stage3 game;
+    public Done_Mover_Enemy bullet;
 
     public float speed;
     public float EnemyFireRate1;
     public float EnemyFireRate2;
     public float EnemyFireRate3;
+    public float EnemyFireRate4;
+    public float EnemyFireRate5;
+
     public bool isLaser;
     public bool isUnit;
     public bool isSpawn;
     public bool isRound;
+    public bool isRoundRotate;
+    public bool isDuo;
+    public bool isTur;
+
     public bool startShooting;
     public int spreadAmount_spawn;
     public int spreadAmount_round;
+    public int spreadAmount_duo;
+    public int spreadAmount_tur;
 
     public static Vector3 shotSpawnRecorder;
 
     private float nextFire1;
     private float nextFire2;
     private float nextFire3;
+    private float nextFire4;
+    private float nextFire5;
     private float rotateDegree;
+    private int rotateSign;
 
     EntityManager manager;
     Entity bulletEntityPrefab;
@@ -37,8 +50,8 @@ public class EnemyShooting_stage3 : MonoBehaviour
     {
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
-        nextFire1 = Time.time + game.GetStartWait () + 1;
         rotateDegree = 0f;
+        rotateSign = 1;
     }
 
     void Update()
@@ -49,7 +62,7 @@ public class EnemyShooting_stage3 : MonoBehaviour
         {
             if (isUnit)
             {
-                if ((Time.time > nextFire1 && Done_GameController_stage2.gameOver == false) || isLaser == true)
+                if (Time.time > nextFire1 || isLaser == true)
                 {
                     nextFire1 = Time.time + EnemyFireRate1 * UnityEngine.Random.Range(0.25f, 1f);
                     Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
@@ -61,7 +74,7 @@ public class EnemyShooting_stage3 : MonoBehaviour
 
             if (isSpawn)
             {
-                if (Time.time > nextFire2 && Done_GameController_stage1.gameOver == false)
+                if (Time.time > nextFire2)
                 {
                     nextFire2 = Time.time + EnemyFireRate2;
                     Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
@@ -73,41 +86,81 @@ public class EnemyShooting_stage3 : MonoBehaviour
 
             if (isRound)
             {
-                if (Time.time > nextFire3 && Done_GameController_stage1.gameOver == false)
+                if (Time.time > nextFire3)
                 {
                     nextFire3 = Time.time + EnemyFireRate3;
                     Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
                     rotation.x = 0f;
                     rotation.y += rotateDegree;
+                    rotateDegree += (rotateSign * 5); // turning
+                    RoundBulletECS(rotation, new Vector3 (0,0,0), spreadAmount_round);
+                    GetComponent<AudioSource>().Play ();
+                }
+            }
+
+            if (isDuo)
+            {
+                if (Time.time > nextFire4)
+                {
+                    nextFire4 = Time.time + EnemyFireRate4;
+                    Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
+                    rotation.x = 0f;
+                    rotation.y += rotateDegree;
                     rotateDegree += 5; // turning
-                    RoundBulletECS(rotation);
+                    StartCoroutine(DuoRoundBulletECS(rotation));
+                    GetComponent<AudioSource>().Play ();
+                }
+            }
+
+            if (isTur)
+            {
+                if (Time.time > nextFire5)
+                {
+                    nextFire5 = Time.time + EnemyFireRate5;
+                    Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
+                    rotation.x = 0f;
+                    rotation.y += rotateDegree;
+                    rotateDegree += 5; // turning
+                    StartCoroutine(TurbineBulletECS(rotation));
                     GetComponent<AudioSource>().Play ();
                 }
             }
         }
     }
 
-    public void SetFireRate (int which, float rate)
+    public void SetFireRate (string str, float rate)
     {
         // unit
-        if (which == 1)
+        if (str == "unit")
             EnemyFireRate1 = rate;
         // spawn
-        else if (which == 2)
+        else if (str == "spawn")
             EnemyFireRate2 = rate;
         // round
-        else
+        else if (str == "round")
             EnemyFireRate3 = rate;
+        // duo
+        else if (str == "duo")
+            EnemyFireRate4 = rate;
+        // tur
+        else if (str == "tur")
+            EnemyFireRate5 = rate;
     }
 
-    public void SetSpawnAmount (int which, int num)
+    public void SetSpawnAmount (string str, int num)
     {
         // spawn
-        if (which == 2)
+        if (str == "spawn")
             spreadAmount_spawn = num;
         // round
-        else
+        else if (str == "round")
             spreadAmount_round = num;
+        // duo
+        else if (str == "duo")
+            spreadAmount_duo = num;
+        // tur
+        else if (str == "tur")
+            spreadAmount_tur = num;
     }
 
     public void SetFireOrNot (string str, bool toSet)
@@ -121,11 +174,36 @@ public class EnemyShooting_stage3 : MonoBehaviour
         // round
         else if (str == "round")
             isRound = toSet;
+        else if (str == "laser")
+        {
+            isUnit = toSet;
+            isLaser = toSet;
+        }
+        // duel round
+        else if (str == "duo")
+        {
+            isDuo = toSet;
+        }
+        // tur round
+        else if (str == "tur")
+        {
+            isTur = toSet;
+        }
     }
 
     public void SetStartShooting (bool toSet)
     {
         startShooting = toSet;
+    }
+
+    public void SetRoundDirection ()
+    {
+        rotateSign *= -1;
+    }
+
+    public float3 GetBossPosition ()
+    {
+        return GetComponent<Transform>().position;
     }
 
     void UnitBulletECS(Vector3 rotation)
@@ -166,22 +244,66 @@ public class EnemyShooting_stage3 : MonoBehaviour
         bullets.Dispose();
     }
 
-    void RoundBulletECS(Vector3 rotation)
+    void RoundBulletECS(Vector3 rotation, Vector3 shift, int spreadAmt) // def para should be const
     {
         Vector3 tempRot = rotation;
-
-        NativeArray<Entity> bullets = new NativeArray<Entity>(spreadAmount_round, Allocator.TempJob);
+        NativeArray<Entity> bullets = new NativeArray<Entity>(spreadAmt, Allocator.TempJob);
         manager.Instantiate(bulletEntityPrefab, bullets);
 
-        for (int index = 0; index < spreadAmount_round; index++)
+        for (int index = 0; index < spreadAmt; index++)
         {
-            tempRot.y = rotation.y + 360 / spreadAmount_round * index;
-
-            manager.SetComponentData(bullets[index], new Translation { Value = enemyShotSpawn.position });
+            tempRot.y = rotation.y + 360 / spreadAmt * index;
+            // Add shift to the shooting position
+            manager.SetComponentData(bullets[index], new Translation { Value = enemyShotSpawn.position + shift });
             manager.SetComponentData(bullets[index], new Rotation { Value = Quaternion.Euler(tempRot) });
         }
-
         bullets.Dispose();
+    }
+
+    IEnumerator DuoRoundBulletECS(Vector3 rotation)
+    {
+        // first wave
+        RoundBulletECS(rotation, new Vector3 (0, 0, 0), spreadAmount_duo);
+        // waitTime
+        float waitTime = 0.25f;
+        yield return new WaitForSeconds(waitTime);
+        // Second Wave
+        float radius = bullet.speed * waitTime;
+        Vector3[] next = {
+                            new Vector3 ( radius, 0, 0), new Vector3 ( radius / 1.414f, 0,  radius / 1.414f),
+                            new Vector3 ( 0, 0, radius), new Vector3 ( radius / 1.414f, 0, -radius / 1.414f),
+                            new Vector3 (0, 0, -radius), new Vector3 (-radius / 1.414f, 0, -radius / 1.414f),
+                            new Vector3 (-radius, 0, 0), new Vector3 (-radius / 1.414f, 0,  radius / 1.414f)
+                         };
+        for (int dot = 0; dot < next.Length; dot++)
+        {
+            RoundBulletECS(rotation, next[dot], spreadAmount_duo);
+        }
+    }
+
+    IEnumerator TurbineBulletECS(Vector3 rotation)
+    {
+        float waitTime = 0.2f;
+        // Second Wave
+        float radius = 2.0f;
+        Vector3[] next = {
+                            new Vector3 ( radius, 0, 0), new Vector3 ( radius / 1.414f, 0,  radius / 1.414f),
+                            new Vector3 ( 0, 0, radius), new Vector3 (-radius / 1.414f, 0,  radius / 1.414f),
+                            new Vector3 (-radius, 0, 0), new Vector3 (-radius / 1.414f, 0, -radius / 1.414f),
+                            new Vector3 (0, 0, -radius), new Vector3 ( radius / 1.414f, 0, -radius / 1.414f)
+                         };
+        float times = 1.0f;
+        for (int wave = 1; wave <= 2; wave++) // records waves only
+        {
+            int dot = (wave == 1) ? 0 : 1;
+            for (; dot < 8; dot += 2)
+            {
+                times += 0.05f;
+                next[dot] = times * next[dot];
+                RoundBulletECS(rotation, next[dot], spreadAmount_tur);
+                yield return new WaitForSeconds(waitTime);
+            }
+        }
     }
 
     public static void SetPosition (Vector3 pos)

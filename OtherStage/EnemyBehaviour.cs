@@ -14,7 +14,7 @@ public class EnemyBehaviour : MonoBehaviour, IConvertGameObjectToEntity
 	    manager.AddComponent(entity, typeof(MoveForward));
 	    manager.AddComponent(entity, typeof(EnemyTag));
 
-	    MoveSpeed moveSpeed = new MoveSpeed { Value = speed };
+	    MoveSpeed moveSpeed = new MoveSpeed { ValueX = speed, ValueZ = speed };
 	    manager.AddComponentData(entity, moveSpeed);
 
 	    Health health = new Health { Value = enemyHealth };

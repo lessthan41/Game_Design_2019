@@ -13,18 +13,24 @@ public class Done_GameController_stage3 : MonoBehaviour
     public float bossWait;
     public float startWait;
     public int WIN_SCORE;
+    public int bossMode;
 
     public Text scoreText;
     public Text restartText;
     public Text gameOverText;
-    // public HealthBar healthBar;
 
+    // static for system
     public static bool gameOver;
     public static int score;
     public static bool bossShow;
 
+    // boss move or not
     public static bool bossMove;
     public static bool moveForward;
+
+    public static bool bossDirectionChange;
+    public static bool bossSpeedChange;
+    public static float bossSpeedRate;
 
     private int recordScore;
     private bool restart;
@@ -45,12 +51,16 @@ public class Done_GameController_stage3 : MonoBehaviour
         bossMove = false;
         moveForward = false;
 
+        bossDirectionChange = false;
+        bossSpeedChange = false;
+        bossSpeedRate = 1.0f;
+
         restartText.text = "";
         gameOverText.text = "";
         recordScore = 0;
 
         UpdateScore();
-        StartCoroutine(SpawnWaves());
+        StartCoroutine(GameStart());
     }
 
     void Update()
@@ -106,7 +116,7 @@ public class Done_GameController_stage3 : MonoBehaviour
         }
     }
 
-    IEnumerator SpawnWaves()
+    IEnumerator GameStart ()
     {
         yield return new WaitForSeconds(startWait);
 
@@ -124,17 +134,179 @@ public class Done_GameController_stage3 : MonoBehaviour
 
         yield return new WaitForSeconds(2);
 
+        // game start
         EnemyShooting.SetStartShooting (true);
 
+        yield return StartCoroutine( One() );
+    }
+
+    IEnumerator One ()
+    {
+        // round
+        EnemyShooting.SetFireRate ("round", 0.1f);
+        EnemyShooting.SetSpawnAmount ("round", 6);
         EnemyShooting.SetFireOrNot ("round", true);
-        EnemyShooting.SetFireRate (3, 0.1f);
-        EnemyShooting.SetSpawnAmount (3, 6);
-
         yield return new WaitForSeconds(10);
-
         EnemyShooting.SetFireOrNot ("round", false);
 
+        // move backward
+        BossSpeedChange (2f);
+        MoveForwardSwitch (true);
+        yield return new WaitForSeconds(1);
+        MoveForwardSwitch (false);
 
+        yield return StartCoroutine( BaseRoutine() );
+    }
+
+    IEnumerator BaseRoutine ()
+    {
+        while (bossMode == 1)
+        {
+            BossMoveSwitch (true);
+            EnemyShooting.SetFireOrNot("unit", true);
+            yield return new WaitForSeconds(5);
+            EnemyShooting.SetFireOrNot("unit", false);
+            BossMoveSwitch (false);
+
+            // round
+            EnemyShooting.SetFireRate ("spawn", 0.1f);
+            EnemyShooting.SetSpawnAmount ("spawn", 9);
+            EnemyShooting.SetFireOrNot ("spawn", true);
+            yield return new WaitForSeconds(3);
+            EnemyShooting.SetFireOrNot ("spawn", false);
+        }
+
+        yield return StartCoroutine( Two() );
+    }
+
+    IEnumerator Two ()
+    {
+        // move forward
+        BossDirectionChange ();
+        yield return new WaitForSeconds(2);
+        MoveForwardSwitch (true);
+        yield return new WaitForSeconds(0.5f);
+        MoveForwardSwitch (false);
+
+        // round
+        EnemyShooting.SetFireRate ("duo", 1f);
+        EnemyShooting.SetSpawnAmount ("duo", 8);
+        EnemyShooting.SetFireOrNot ("duo", true);
+        yield return new WaitForSeconds(10);
+        EnemyShooting.SetFireOrNot ("duo", false);
+
+        // move backward
+        BossDirectionChange ();
+        yield return new WaitForSeconds(2);
+        MoveForwardSwitch (true);
+        yield return new WaitForSeconds(0.5f);
+        MoveForwardSwitch (false);
+
+        yield return StartCoroutine( MediumRoutine() );
+    }
+
+    IEnumerator MediumRoutine ()
+    {
+        while (bossMode == 2)
+        {
+            BossMoveSwitch (true);
+            EnemyShooting.SetFireRate ("spawn", 0.75f);
+            EnemyShooting.SetFireOrNot("spawn", true);
+            yield return new WaitForSeconds(3);
+            EnemyShooting.SetFireOrNot("spawn", false);
+            BossMoveSwitch (false);
+
+            // round
+            EnemyShooting.SetFireRate ("duo", 1f);
+            EnemyShooting.SetSpawnAmount ("duo", 8);
+            EnemyShooting.SetFireOrNot ("duo", true);
+            yield return new WaitForSeconds(5);
+            EnemyShooting.SetFireOrNot ("duo", false);
+        }
+
+        yield return StartCoroutine( Three() );
+    }
+
+    IEnumerator Three ()
+    {
+        // move forward
+        BossDirectionChange ();
+        yield return new WaitForSeconds(2);
+        MoveForwardSwitch (true);
+        yield return new WaitForSeconds(1);
+        MoveForwardSwitch (false);
+
+        // round
+        EnemyShooting.SetFireRate ("round", 0.1f);
+        EnemyShooting.SetSpawnAmount ("round", 6);
+        EnemyShooting.SetFireOrNot ("round", true);
+        yield return new WaitForSeconds(1.5f);
+        EnemyShooting.SetRoundDirection ();
+        yield return new WaitForSeconds(1.5f);
+        EnemyShooting.SetRoundDirection ();
+        yield return new WaitForSeconds(1.5f);
+        EnemyShooting.SetRoundDirection ();
+        yield return new WaitForSeconds(1.5f);
+        EnemyShooting.SetFireOrNot ("round", false);
+
+        yield return new WaitForSeconds(5);
+
+        // tur
+        EnemyShooting.SetFireRate ("tur", 1f);
+        EnemyShooting.SetSpawnAmount ("tur", 6);
+        EnemyShooting.SetFireOrNot ("tur", true);
+        yield return new WaitForSeconds(5);
+        EnemyShooting.SetFireOrNot ("tur", false);
+
+        // move backward
+        BossDirectionChange ();
+        yield return new WaitForSeconds(2);
+        MoveForwardSwitch (true);
+        yield return new WaitForSeconds(0.5f);
+        MoveForwardSwitch (false);
+
+        yield return StartCoroutine( HardRoutine() );
+    }
+
+    IEnumerator HardRoutine ()
+    {
+        while (bossMode == 3)
+        {
+            BossMoveSwitch (true);
+            EnemyShooting.SetFireRate ("spawn", 0.6f);
+            EnemyShooting.SetFireOrNot("spawn", true);
+            yield return new WaitForSeconds(1.5f);
+            EnemyShooting.SetFireOrNot("spawn", false);
+            BossMoveSwitch (false);
+
+            // round
+            EnemyShooting.SetFireRate ("tur", 1f);
+            EnemyShooting.SetSpawnAmount ("tur", 6);
+            EnemyShooting.SetFireOrNot ("tur", true);
+            yield return new WaitForSeconds(5);
+            EnemyShooting.SetFireOrNot ("tur", false);
+        }
+    }
+
+    private void MoveForwardSwitch (bool toSet)
+    {
+        moveForward = toSet;
+    }
+
+    private void BossMoveSwitch (bool toSet)
+    {
+        bossMove = toSet;
+    }
+
+    private void BossDirectionChange ()
+    {
+        bossDirectionChange = true;
+    }
+
+    private void BossSpeedChange (float rate)
+    {
+        bossSpeedChange = true;
+        bossSpeedRate = rate;
     }
 
     public float GetStartWait ()
@@ -155,6 +327,11 @@ public class Done_GameController_stage3 : MonoBehaviour
     public bool GetGameStatus ()
     {
         return gameOver;
+    }
+
+    public void SetBossMode (int mode)
+    {
+        bossMode = mode;
     }
 
     public static void AddScore(int newScoreValue)

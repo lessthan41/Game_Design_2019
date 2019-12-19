@@ -4,13 +4,14 @@ using Unity.Entities;
 [Serializable]
 public struct MoveSpeed : IComponentData
 {
-	public float Value;
+	public float ValueX;
+	public float ValueZ;
 
 	public void switchDirection (float Position)
 	{
-		if (Position * Value > 0f)
+		if (Position * ValueX > 0f)
 		{
-			Value = -Value;
+			ValueX = -ValueX;
 		}
 	}
 }

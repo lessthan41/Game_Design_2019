@@ -54,7 +54,7 @@ public class EnemyShooting_stage2 : MonoBehaviour
         {
             if (isUnit)
             {
-                if ((Time.time > nextFire1 && Done_GameController_stage2.gameOver == false) || isLaser == true)
+                if ((Time.time > nextFire1) || isLaser == true)
                 {
                     nextFire1 = Time.time + EnemyFireRate1 * UnityEngine.Random.Range(0.25f, 1f);
                     Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
@@ -66,7 +66,7 @@ public class EnemyShooting_stage2 : MonoBehaviour
 
             if (isSpawn)
             {
-                if (Time.time > nextFire2 && Done_GameController_stage1.gameOver == false)
+                if (Time.time > nextFire2)
                 {
                     nextFire2 = Time.time + EnemyFireRate2;
                     Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
@@ -78,7 +78,7 @@ public class EnemyShooting_stage2 : MonoBehaviour
 
             if (isRound)
             {
-                if (Time.time > nextFire3 && Done_GameController_stage1.gameOver == false)
+                if (Time.time > nextFire3)
                 {
                     nextFire3 = Time.time + EnemyFireRate3;
                     Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;

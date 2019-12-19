@@ -6,7 +6,7 @@ using Unity.Collections;
 using UnityEngine.SceneManagement;
 
 
-[UpdateAfter(typeof(MoveForwardSystem))]
+[UpdateBefore(typeof(MoveForwardSystem))]
 public class AccelerateSystem : JobComponentSystem
 {
 	EndSimulationEntityCommandBufferSystem buffer;
@@ -25,7 +25,8 @@ public class AccelerateSystem : JobComponentSystem
 
 		public void Execute(Entity entity, int jobIndex, ref MoveSpeed moveSpeed, [ReadOnly] ref EnemyTag enemyTag)
 		{
-			moveSpeed.Value *= ratio;
+			moveSpeed.ValueX *= ratio;
+			moveSpeed.ValueZ *= ratio;
 		}
 	}
 
@@ -47,7 +48,7 @@ public class AccelerateSystem : JobComponentSystem
 				handle = job.Schedule(this, inputDeps);
 			}
 		}
-		else
+		else if (SceneManager.GetActiveScene().buildIndex == 4)
 		{
 			// stage2 boss 血量過低
 			if (Done_GameController_stage2.ranpage == true && haveAccelerate == false)
@@ -58,6 +59,34 @@ public class AccelerateSystem : JobComponentSystem
 					commands = buffer.CreateCommandBuffer().ToConcurrent(),
 					ratio = 2f,
 				};
+				handle = job.Schedule(this, inputDeps);
+			}
+		}
+		else if (SceneManager.GetActiveScene().buildIndex == 6)
+		{
+			if (Done_GameController_stage3.bossDirectionChange == true)
+			{
+				Done_GameController_stage3.bossDirectionChange = false;
+
+				var job = new AccelerateJob
+				{
+					commands = buffer.CreateCommandBuffer().ToConcurrent(),
+					ratio = -1f,
+				};
+
+				handle = job.Schedule(this, inputDeps);
+			}
+
+			if (Done_GameController_stage3.bossSpeedChange == true)
+			{
+				Done_GameController_stage3.bossSpeedChange = false;
+
+				var job = new AccelerateJob
+				{
+					commands = buffer.CreateCommandBuffer().ToConcurrent(),
+					ratio = Done_GameController_stage3.bossSpeedRate,
+				};
+
 				handle = job.Schedule(this, inputDeps);
 			}
 		}

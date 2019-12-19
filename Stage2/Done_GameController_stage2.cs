@@ -108,7 +108,7 @@ public class Done_GameController_stage2 : MonoBehaviour
 
         Quaternion spawnRotation = Quaternion.identity;
 
-        for (int round = 0; round < 4; round++)
+        for (int round = 0; round < 0; round++)
         {
             for (int i = 0; i < hazardCount; i++)
             {

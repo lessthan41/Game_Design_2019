@@ -14,7 +14,7 @@ public class Done_Mover_Enemy : MonoBehaviour, IConvertGameObjectToEntity
         manager.AddComponent(entity, typeof(EnemyBulletTag));
 		manager.AddComponent(entity, typeof(BulletTag));
 
-        MoveSpeed moveSpeed = new MoveSpeed { Value = speed };
+        MoveSpeed moveSpeed = new MoveSpeed { ValueX = speed, ValueZ = speed };
         manager.AddComponentData(entity, moveSpeed);
 
         TimeToLive timeToLive = new TimeToLive { Value = lifeTime };

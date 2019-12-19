@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HealthBar : MonoBehaviour
 {
     public Animator healthBarAnimator;
+    public Done_GameController_stage3 game;
 
     public static bool showHealth;
     public static float scaleForSet;
@@ -12,6 +14,7 @@ public class HealthBar : MonoBehaviour
     private Transform bar;
     private bool hasShown;
     private float scale;
+    private int stage;
 
     private void Start()
     {
@@ -20,6 +23,7 @@ public class HealthBar : MonoBehaviour
         hasShown = false;
         scale = 1f;
         scaleForSet = 1f;
+        stage = SceneManager.GetActiveScene().buildIndex / 2;
     }
 
     private void Update ()
@@ -35,9 +39,25 @@ public class HealthBar : MonoBehaviour
 
         bar.localScale = new Vector3 (scale, 1f, 1f);
 
-        if (scale <= 0.3f)
+        if (stage == 2) // stage 2
         {
-            SetColor (Color.white);
+            if (scale <= 0.3f)
+            {
+                SetColor (Color.red);
+            }
+        }
+        else if (stage == 3) // stage 3
+        {
+            if (scale <= 0.66f)
+            {
+                SetColor (Color.yellow);
+                game.SetBossMode(2);
+            }
+            if (scale <= 0.33f)
+            {
+                SetColor (Color.red);
+                game.SetBossMode(3);
+            }
         }
     }
 

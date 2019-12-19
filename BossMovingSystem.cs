@@ -24,7 +24,7 @@ namespace Unity.Transforms
 					speed.switchDirection(pos.Value.x);
 				}
 
-				pos.Value.x = pos.Value.x + dt * speed.Value;
+				pos.Value.x = pos.Value.x + dt * speed.ValueX;
 			}
 		}
 

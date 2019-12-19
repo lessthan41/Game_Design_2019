@@ -32,7 +32,7 @@ public class BossHealthSystem : ComponentSystem
                     // ranpage
                     // if (health.Value <= 60)
                     // {
-                    //     Done_GameController_stage2.ranpage = true;
+                    //     Done_GameController_stage3.ranpage = true;
                     // }
                 }
 			}

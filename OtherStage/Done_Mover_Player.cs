@@ -14,7 +14,7 @@ public class Done_Mover_Player : MonoBehaviour, IConvertGameObjectToEntity
         manager.AddComponent(entity, typeof(PlayerBulletTag));
 		manager.AddComponent(entity, typeof(BulletTag));
 
-        MoveSpeed moveSpeed = new MoveSpeed { Value = speed };
+        MoveSpeed moveSpeed = new MoveSpeed { ValueX = speed, ValueZ = speed };
         manager.AddComponentData(entity, moveSpeed);
 
         TimeToLive timeToLive = new TimeToLive { Value = lifeTime };
