@@ -5,36 +5,43 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 
+// shooting bullet entity in stage 2
 public class EnemyShooting_stage2 : MonoBehaviour
 {
+    // set shotspawn and three attack ways
     public Transform enemyShotSpawn;
     public GameObject shot;
     public Done_GameController_stage2 game;
-
     public float speed;
     public float EnemyFireRate1;
     public float EnemyFireRate2;
     public float EnemyFireRate3;
-    public int spreadAmount_spawn;
-    public int spreadAmount_round;
+    public int spreadAmount_spawn; // bullet amount
+    public int spreadAmount_round; // bullet amount
 
+    // for shotSpawn communication
     public static Vector3 shotSpawnRecorder;
+
+    // for communication
     public static bool startShooting;
     public static  bool isLaser;
     public static  bool isUnit;
     public static  bool isSpawn;
     public static  bool isRound;
 
+    // Code Calculate Need
     private float nextFire1;
     private float nextFire2;
     private float nextFire3;
     private float rotateDegree;
 
+    // entity manager & entity prefab for instantiate
     EntityManager manager;
     Entity bulletEntityPrefab;
 
     void Start()
     {
+        // initialize manager and bullet prefab for instantiate
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
         nextFire1 = Time.time + game.GetStartWait() + 1;
@@ -48,8 +55,10 @@ public class EnemyShooting_stage2 : MonoBehaviour
 
     void Update()
     {
+        // set shotSpawn position
         enemyShotSpawn.position = shotSpawnRecorder - new Vector3 (0f, 0f, 1f);
 
+        // control shooting types
         if (startShooting == true)
         {
             if (isUnit)
@@ -92,18 +101,20 @@ public class EnemyShooting_stage2 : MonoBehaviour
         }
     }
 
+    // unit shooting
     void UnitBulletECS(Vector3 rotation)
     {
         Vector3 tempRot = rotation;
 
         NativeArray<Entity> bullets = new NativeArray<Entity>(1, Allocator.TempJob);
-        manager.Instantiate(bulletEntityPrefab, bullets);
+        manager.Instantiate(bulle tEntityPrefab, bullets);
         manager.SetComponentData(bullets[0], new Translation { Value = enemyShotSpawn.position });
         manager.SetComponentData(bullets[0], new Rotation { Value = Quaternion.Euler(tempRot) });
 
         bullets.Dispose();
     }
 
+    // spawn shooting
     void SpawnBulletECS(Vector3 rotation)
     {
         int max = spreadAmount_spawn / 2;
@@ -130,9 +141,9 @@ public class EnemyShooting_stage2 : MonoBehaviour
         bullets.Dispose();
     }
 
+    // round shooting
     void RoundBulletECS(Vector3 rotation)
     {
-
         Vector3 tempRot = rotation;
 
         NativeArray<Entity> bullets = new NativeArray<Entity>(spreadAmount_round, Allocator.TempJob);

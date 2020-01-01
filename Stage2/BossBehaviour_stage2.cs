@@ -1,24 +1,25 @@
 ﻿using Unity.Entities;
 using UnityEngine;
 
+// for boss entity
 public class BossBehaviour_stage2 : MonoBehaviour, IConvertGameObjectToEntity
 {
-	// 自訂參數 (敵機飛行速度、敵機血量、生存時間)
+	// boss info
 	public float speed;
 	public float enemyHealth;
 
-
+	// when boss is converted into entity
 	public void Convert(Entity entity, EntityManager manager, GameObjectConversionSystem conversionSystem)
 	{
-	    manager.AddComponent(entity, typeof(MoveForward));
-		manager.AddComponent(entity, typeof(BossMoving));
-	    manager.AddComponent(entity, typeof(EnemyTag));
-		manager.AddComponent(entity, typeof(BossTag));
+	    manager.AddComponent(entity, typeof(MoveForward)); // move vertically
+		manager.AddComponent(entity, typeof(BossMoving)); // move horizontally
+	    manager.AddComponent(entity, typeof(EnemyTag)); // this is enemy
+		manager.AddComponent(entity, typeof(BossTag)); // this is boss
 
 	    MoveSpeed moveSpeed = new MoveSpeed { ValueX = speed, ValueZ = speed };
-	    manager.AddComponentData(entity, moveSpeed);
+	    manager.AddComponentData(entity, moveSpeed); // set moving speed
 
 	    Health health = new Health { Value = enemyHealth };
-	    manager.AddComponentData(entity, health);
+	    manager.AddComponentData(entity, health); // set health value
     }
 }

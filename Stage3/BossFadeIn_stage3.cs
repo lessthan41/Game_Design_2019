@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// for boss fade in animation
 public class BossFadeIn_stage3 : MonoBehaviour
 {
-    public Animator bossShowAnimation;
+    public Animator bossShowAnimation; // boss fade animator
     public float gameObjectDeleteWait;
 
     private bool gameStart;
@@ -35,11 +36,13 @@ public class BossFadeIn_stage3 : MonoBehaviour
         StartCoroutine( GameObjectDelete() );
     }
 
+    // set boss show triger
     void BossShow ()
     {
         bossShowAnimation.SetTrigger ("BossFadeIn");
     }
 
+    // delete boss animation
     IEnumerator GameObjectDelete ()
     {
         yield return new WaitForSeconds(gameObjectDeleteWait);

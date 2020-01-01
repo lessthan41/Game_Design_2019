@@ -4,26 +4,27 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// [UpdateAfter(typeof(MoveForwardSystem))]
-// [UpdateAfter(typeof(BossMovingSystem))]
-// [UpdateBefore(typeof(MoveForwardSystem))]
-[AlwaysUpdateSystem]
+[AlwaysUpdateSystem] // position need always update
 public class PositionUpdateSystem : ComponentSystem
 {
-	private bool firstSet;
-	private float prob;
+	private bool firstSet; // for stage 2 start bug
+	private float prob; // update probability
 
+	// Start()
 	protected override void OnCreate()
 	{
 		firstSet = true;
 	}
 
+	// Update()
 	protected override void OnUpdate()
 	{
-		prob = 0.3f;
+		prob = 0.3f; // for update randomly
 
+		// for each entity who has Translation attribute
 		Entities.ForEach((Entity entity, ref Translation pos) =>
 		{
+			// if entity has EnemyTag update position
 			if (EntityManager.HasComponent(entity, typeof(EnemyTag)))
 			{
 				if (SceneManager.GetActiveScene().buildIndex == 4)

@@ -5,16 +5,19 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-// public class EnemyBehaviour_stage1 : MonoBehaviour, IConvertGameObjectToEntity
+// for enemy (shooting boy) in stage 1 (gameobject)
 public class EnemyBehaviour_stage1 : MonoBehaviour
 {
+	// speed
 	public float boySpeedx;
 	public float boySpeedz;
 
+	// switch texture for animation
 	public float textureSwitchRate;
 	public Texture texture1;
 	public Texture texture2;
 
+	// Code Calculate Need
 	private int textureCnt;
 	private float nextTextureSwitch;
 	private float speedSwitchRate;
@@ -32,11 +35,11 @@ public class EnemyBehaviour_stage1 : MonoBehaviour
 
 	private void Update ()
 	{
-		SwitchTexture ();
-		SwitchDirection ();
-		Moving ();
-		Accelerate ();
-		EnemyShooting_stage1.SetPosition (transform.Find("Shot Spawn").transform.position);
+		SwitchTexture (); // set moving animation
+		SwitchDirection (); // switch moving direction
+		Moving (); // moving
+		Accelerate (); // if stage1 less than 30s then ranpage
+		EnemyShooting_stage1.SetPosition (transform.Find("Shot Spawn").transform.position); // update shooting position per frame
 	}
 
 	private void SwitchTexture ()

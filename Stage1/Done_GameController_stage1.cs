@@ -5,32 +5,35 @@ using UnityEngine.UI;
 using Unity.Entities;
 using Unity.Transforms;
 
+// control stage 1
 public class Done_GameController_stage1 : MonoBehaviour
 {
-    public GameObject hazards;
-    public Vector3 spawnValues;
+    public GameObject hazards; // hazard container
+    public Vector3 spawnValues; // enemy instantiate point
 
-    // 遊戲時間、遊戲開始間隔時間
-    public int GameTime;
-    public float GameStartWait;
+    public int GameTime; // game time
+    public float GameStartWait; // game start wait
 
-    public float checkWait;
-    public static float startWait;
-    public static int time;
+    public float checkWait; // check gameOver every few seconds
+    public static float startWait; // game start wait for communicate with system
+    public static int time; // game time for communicate with system
 
+    // UI Text
     public Text timeText;
     public Text restartText;
     public Text gameOverText;
 
+    // status variable
     private float timeRecorder;
     public static bool gameOver;
     private bool restart;
 
-    EntityManager manager;
-    Entity enemyEntityPrefab;
+    EntityManager manager; // entity instantiate manager
+    Entity enemyEntityPrefab; // put enemy prefab
 
     void Start()
     {
+        // initialize enemy prefab for instantiate
         manager = World.Active.EntityManager;
         enemyEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards, World.Active);
 
@@ -42,7 +45,7 @@ public class Done_GameController_stage1 : MonoBehaviour
         gameOverText.text = "";
         timeRecorder = Time.time + startWait;
         UpdateScore();
-        StartCoroutine(SpawnWaves());
+        StartCoroutine(SpawnWaves()); // start hazard wave
     }
 
     void Update()
@@ -77,6 +80,7 @@ public class Done_GameController_stage1 : MonoBehaviour
         }
     }
 
+    // check game over
     IEnumerator SpawnWaves()
     {
         while (true)

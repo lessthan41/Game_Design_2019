@@ -5,18 +5,23 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 
+// shooting bullet entity in stage 1
 public class EnemyShooting_stage1 : MonoBehaviour
 {
+    // set shotspawn and three attack ways
     public Transform enemyShotSpawn;
     public GameObject shot;
     public float speed;
     public float EnemyFireRate1;
     public float EnemyFireRate2;
     public float EnemyFireRate3;
-    public int spreadAmount_spawn;
-    public int spreadAmount_round;
+    public int spreadAmount_spawn; // bullet amount
+    public int spreadAmount_round; // bullet amount
 
+    // for shotSpawn communication
     public static Vector3 shotSpawnRecorder;
+
+    // Code Calculate Need
     private float nextFire1;
     private float nextFire2;
     private float nextFire3;
@@ -26,6 +31,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
 
     void Start()
     {
+        // initialize manager and bullet prefab for instantiate
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
         nextFire1 = Time.time + Done_GameController_stage1.startWait;
@@ -36,12 +42,13 @@ public class EnemyShooting_stage1 : MonoBehaviour
 
     void Update()
     {
+        // update shotSpawn position
         if (enemyShotSpawn.position != shotSpawnRecorder)
         {
             enemyShotSpawn.position = shotSpawnRecorder;
         }
 
-        // 30秒後提高難度
+        // 30s ranpage
         if (Done_GameController_stage1.time == 30 && haveAccelerate == false)
         {
             haveAccelerate = true;
@@ -52,6 +59,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
             spreadAmount_spawn *= 2;
         }
 
+        // attack mode 1
         if (Time.time > nextFire1 && Done_GameController_stage1.gameOver == false)
 		{
             nextFire1 = Time.time + EnemyFireRate1 * UnityEngine.Random.Range(0.25f, 1f);
@@ -61,6 +69,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
             GetComponent<AudioSource>().Play ();
 		}
 
+        // attack mode 2
         if (Time.time > nextFire2 && Done_GameController_stage1.gameOver == false)
 		{
             nextFire2 = Time.time + EnemyFireRate2 * UnityEngine.Random.Range(0.5f, 2f);
@@ -70,6 +79,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
             GetComponent<AudioSource>().Play ();
 		}
 
+        // attack mode 3
         if (Time.time > nextFire3 && Done_GameController_stage1.gameOver == false)
 		{
             nextFire3 = Time.time + EnemyFireRate3 * UnityEngine.Random.Range(0.75f, 2f);
@@ -80,6 +90,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
 		}
     }
 
+    // unit shooting
     void UnitBulletECS(Vector3 rotation)
     {
         Vector3 tempRot = rotation;
@@ -92,6 +103,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
         bullets.Dispose();
     }
 
+    // spawn shooting
     void SpawnBulletECS(Vector3 rotation)
     {
         int max = spreadAmount_spawn / 2;
@@ -118,6 +130,7 @@ public class EnemyShooting_stage1 : MonoBehaviour
         bullets.Dispose();
     }
 
+    // round shooting
     void RoundBulletECS(Vector3 rotation)
     {
 

@@ -1,11 +1,10 @@
 ﻿using Unity.Entities;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-// for enemy bullet prefab to instantiate enemybullet
-public class Done_Mover_Enemy : MonoBehaviour, IConvertGameObjectToEntity
+// for enemy prefab to instantiate
+public class Done_Mover_Enemy_stage23 : MonoBehaviour, IConvertGameObjectToEntity
 {
-	// bullet info
+	// enemy info
 	public float speed;
     public float lifeTime;
     public float health;
@@ -13,12 +12,7 @@ public class Done_Mover_Enemy : MonoBehaviour, IConvertGameObjectToEntity
 	// add component when gameObject convert into entity
     public void Convert(Entity entity, EntityManager manager, GameObjectConversionSystem conversionSystem)
     {
-		// stage 1 is enemy bullet & stage 3 is player bullet
-		if (SceneManager.GetActiveScene().buildIndex == 2)
-			manager.AddComponent(entity, typeof(EnemyBulletTag));
-		else
-			manager.AddComponent(entity, typeof(PlayerBulletTag));
-
+		manager.AddComponent(entity, typeof(EnemyBulletTag)); // this is a enemy bullet
         manager.AddComponent(entity, typeof(MoveForward)); // move forward tag (move vertically)
 		manager.AddComponent(entity, typeof(BulletTag)); // bullet tag (it is a bullet)
 
@@ -30,6 +24,5 @@ public class Done_Mover_Enemy : MonoBehaviour, IConvertGameObjectToEntity
 
         Health bulletHealth = new Health { Value = health };
         manager.AddComponentData(entity, bulletHealth); // set bullet health
-
     }
 }

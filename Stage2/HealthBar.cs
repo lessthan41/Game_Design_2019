@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// get health bar
 public class HealthBar : MonoBehaviour
 {
+    // healthbar show animator
     public Animator healthBarAnimator;
     public Done_GameController_stage3 game;
 
+    // show health bar
     public static bool showHealth;
     public static float scaleForSet;
 
+    // For code calculation
     private Transform bar;
     private bool hasShown;
     private float scale;
@@ -26,6 +30,7 @@ public class HealthBar : MonoBehaviour
         stage = SceneManager.GetActiveScene().buildIndex / 2;
     }
 
+    // healthbar operation
     private void Update ()
     {
         if (showHealth == true && hasShown == false)
@@ -61,11 +66,13 @@ public class HealthBar : MonoBehaviour
         }
     }
 
+    // set healthbar scale
     public static void SetSize (float sizeNormalized)
     {
         scaleForSet = sizeNormalized;
     }
 
+    // set health bar color
     private void SetColor (Color c)
     {
         bar.Find("BarSprite").GetComponent<SpriteRenderer>().color = c;

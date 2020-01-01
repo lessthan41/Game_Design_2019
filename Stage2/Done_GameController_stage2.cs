@@ -5,40 +5,43 @@ using UnityEngine.UI;
 using Unity.Entities;
 using Unity.Transforms;
 
+// control stage 2
 public class Done_GameController_stage2 : MonoBehaviour
 {
-    public GameObject[] hazards;
-    public Vector3 spawnValues;
-    public int hazardCount;
+    public GameObject[] hazards; // hazard container
+    public Vector3 spawnValues; // enemy instantiate point
+    public int hazardCount; // hazard numbers
 
-    // 產生怪物間隔時間
+    // time setting
     public float spawnWait;
-    // 遊戲開始間隔時間
     public float startWait;
-    // 每波怪物間隔時間
     public float waveWait;
     public float bossWait;
-    public int WIN_SCORE;
+    public int WIN_SCORE; // for fade out trigger
 
+    // UI Text
     public Text scoreText;
     public Text restartText;
     public Text gameOverText;
 
+    // variable for communicating with system
     public static bool gameOver;
     public static int score;
     public static bool bossShow;
     public static bool ranpage;
 
+    // status variable
     private int recordScore;
     private bool restart;
-    [SerializeField] private HealthBar healthBar;
+    [SerializeField] private HealthBar healthBar; // boss health bar
 
-    EntityManager manager;
-    Entity enemyEntityPrefab0;
-    Entity enemyEntityPrefab1;
+    EntityManager manager; // entity instantiate manager
+    Entity enemyEntityPrefab0; // put enemy prefab
+    Entity enemyEntityPrefab1; // put enemy prefab
 
     void Start()
     {
+        // initialize enemy prefab for instantiate
         manager = World.Active.EntityManager;
         enemyEntityPrefab0 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[0], World.Active);
         enemyEntityPrefab1 = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazards[1], World.Active);
@@ -55,7 +58,7 @@ public class Done_GameController_stage2 : MonoBehaviour
         recordScore = 0;
 
         UpdateScore();
-        StartCoroutine(SpawnWaves());
+        StartCoroutine(SpawnWaves()); // start hazard wave
     }
 
     void Update()
@@ -91,6 +94,7 @@ public class Done_GameController_stage2 : MonoBehaviour
         // win
         if (score >= WIN_SCORE)
         {
+            bossShow = false;
             gameOver = true;
         }
 
@@ -101,6 +105,7 @@ public class Done_GameController_stage2 : MonoBehaviour
         }
     }
 
+    // start instantiate enemies (main procedure)
     IEnumerator SpawnWaves()
     {
         yield return new WaitForSeconds(startWait);
@@ -108,7 +113,7 @@ public class Done_GameController_stage2 : MonoBehaviour
 
         Quaternion spawnRotation = Quaternion.identity;
 
-        for (int round = 0; round < 0; round++)
+        for (int round = 0; round < 3; round++)
         {
             for (int i = 0; i < hazardCount; i++)
             {

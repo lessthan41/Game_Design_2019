@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// UI text change Stage 1
 public class ChangeText_stage1 : MonoBehaviour
 {
     public GameObject toChange1;

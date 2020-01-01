@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// for scene switch
 public class SceneSwitch_stage1 : MonoBehaviour
 {
-    public Animator animator;
+    public Animator animator; // fade animator
 
     public void Update ()
     {

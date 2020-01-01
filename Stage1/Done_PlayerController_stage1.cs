@@ -5,21 +5,22 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 
-
+// player moving boundary
 [System.Serializable]
 public class Done_Boundary_stage1
 {
 	public float xMin, xMax, zMin, zMax;
 }
 
+// for player control
 public class Done_PlayerController_stage1 : MonoBehaviour
 {
 	// Assign GameObject
-	public Done_Boundary_stage1 boundary;
+	public Done_Boundary_stage1 boundary; // move boundary
 	public GameObject shot;
-	public Transform shotSpawn;
+	public Transform shotSpawn; // shooting point
 
-	// 自訂參數 (飛行速度、fireRate、血量、子彈數)
+	// player setting
 	public float speed;
 	public float fireRate;
 	public float switchRate;
@@ -28,7 +29,7 @@ public class Done_PlayerController_stage1 : MonoBehaviour
 	public int spreadAmount_spawn;
 	public int spreadAmount_round;
 	public int fireMode;
-	public Texture texture1;
+	public Texture texture1; // moving animation texture
 	public Texture texture2;
 
 	// Code Calculate Need
@@ -37,11 +38,13 @@ public class Done_PlayerController_stage1 : MonoBehaviour
 	private int textureCnt;
 	public static float3 playerPosition;
 
+	// for player bullet instantiate
     EntityManager manager;
     Entity bulletEntityPrefab;
 
     void Start()
     {
+		// initialize player bullet prefab for instantiate
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
 		nextTextureSwitch = Time.time + textureSwitchRate;
@@ -50,9 +53,10 @@ public class Done_PlayerController_stage1 : MonoBehaviour
 
     void Update ()
 	{
-		SwitchTexture ();
+		SwitchTexture (); // change texture for moving animation
 	}
 
+	// player controller
 	void FixedUpdate ()
 	{
 		float moveHorizontal = Input.GetAxis ("Horizontal");
@@ -68,10 +72,11 @@ public class Done_PlayerController_stage1 : MonoBehaviour
 			Mathf.Clamp (GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)
 		);
 
-		// 時刻紀錄位置 & 判定是否刪除玩家、結束遊戲
+		// get player position
 		playerPosition = GetComponent<Rigidbody>().position;
 	}
 
+	// change texture for moving animation
 	private void SwitchTexture ()
 	{
 		if (Done_GameController_stage1.gameOver == false && Time.time >= nextTextureSwitch)

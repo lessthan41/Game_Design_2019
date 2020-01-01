@@ -5,29 +5,31 @@ using UnityEngine.UI;
 using Unity.Entities;
 using Unity.Transforms;
 
+// control stage 3
 public class Done_GameController_stage3 : MonoBehaviour
 {
-    public GameObject hazard;
-    public EnemyShooting_stage3 EnemyShooting;
+    public GameObject hazard; // hazard container
+    public EnemyShooting_stage3 EnemyShooting; // for getting EnemyShooting info
 
+    // time info
     public float bossWait;
     public float startWait;
     public int WIN_SCORE;
     public int bossMode;
 
+    // UI Text
     public Text scoreText;
     public Text restartText;
     public Text gameOverText;
 
-    // static for system
+    // status recorder
     public static bool gameOver;
     public static int score;
     public static bool bossShow;
 
-    // boss move or not
+    // boss move change (communicate with system)
     public static bool bossMove;
     public static bool moveForward;
-
     public static bool bossDirectionChange;
     public static bool bossSpeedChange;
     public static float bossSpeedRate;
@@ -35,11 +37,12 @@ public class Done_GameController_stage3 : MonoBehaviour
     private int recordScore;
     private bool restart;
 
-    EntityManager manager;
-    Entity enemyEntityPrefab;
+    EntityManager manager; // entity instantiate manager
+    Entity enemyEntityPrefab; // put boss prefab
 
     void Start()
     {
+        // initialize enemy prefab for instantiate
         manager = World.Active.EntityManager;
         enemyEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(hazard, World.Active);
 
@@ -60,7 +63,7 @@ public class Done_GameController_stage3 : MonoBehaviour
         recordScore = 0;
 
         UpdateScore();
-        StartCoroutine(GameStart());
+        StartCoroutine(GameStart()); // game start
     }
 
     void Update()
@@ -99,16 +102,6 @@ public class Done_GameController_stage3 : MonoBehaviour
             gameOver = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            bossMove = (bossMove == true) ? false : true;
-        }
-
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            moveForward = (moveForward == true) ? false : true;
-        }
-
         // 金手指
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -116,6 +109,7 @@ public class Done_GameController_stage3 : MonoBehaviour
         }
     }
 
+    // game main procedure control
     IEnumerator GameStart ()
     {
         yield return new WaitForSeconds(startWait);
@@ -140,6 +134,7 @@ public class Done_GameController_stage3 : MonoBehaviour
         yield return StartCoroutine( One() );
     }
 
+    // boss first status
     IEnumerator One ()
     {
         // round
@@ -158,6 +153,7 @@ public class Done_GameController_stage3 : MonoBehaviour
         yield return StartCoroutine( BaseRoutine() );
     }
 
+    // boss first status routine
     IEnumerator BaseRoutine ()
     {
         while (bossMode == 1)
@@ -179,11 +175,11 @@ public class Done_GameController_stage3 : MonoBehaviour
         yield return StartCoroutine( Two() );
     }
 
+    // boss second status
     IEnumerator Two ()
     {
         // move forward
         BossDirectionChange ();
-        yield return new WaitForSeconds(2);
         MoveForwardSwitch (true);
         yield return new WaitForSeconds(0.5f);
         MoveForwardSwitch (false);
@@ -197,7 +193,6 @@ public class Done_GameController_stage3 : MonoBehaviour
 
         // move backward
         BossDirectionChange ();
-        yield return new WaitForSeconds(2);
         MoveForwardSwitch (true);
         yield return new WaitForSeconds(0.5f);
         MoveForwardSwitch (false);
@@ -205,6 +200,7 @@ public class Done_GameController_stage3 : MonoBehaviour
         yield return StartCoroutine( MediumRoutine() );
     }
 
+    // boss second status routine
     IEnumerator MediumRoutine ()
     {
         while (bossMode == 2)
@@ -227,11 +223,11 @@ public class Done_GameController_stage3 : MonoBehaviour
         yield return StartCoroutine( Three() );
     }
 
+    // boss third status
     IEnumerator Three ()
     {
         // move forward
         BossDirectionChange ();
-        yield return new WaitForSeconds(2);
         MoveForwardSwitch (true);
         yield return new WaitForSeconds(1);
         MoveForwardSwitch (false);
@@ -239,7 +235,14 @@ public class Done_GameController_stage3 : MonoBehaviour
         // round
         EnemyShooting.SetFireRate ("round", 0.1f);
         EnemyShooting.SetSpawnAmount ("round", 6);
+        EnemyShooting.SetRotateSpeed (7);
         EnemyShooting.SetFireOrNot ("round", true);
+        yield return new WaitForSeconds(1.5f);
+        EnemyShooting.SetRoundDirection ();
+        yield return new WaitForSeconds(1.5f);
+        EnemyShooting.SetRoundDirection ();
+        yield return new WaitForSeconds(1.5f);
+        EnemyShooting.SetRoundDirection ();
         yield return new WaitForSeconds(1.5f);
         EnemyShooting.SetRoundDirection ();
         yield return new WaitForSeconds(1.5f);
@@ -249,7 +252,13 @@ public class Done_GameController_stage3 : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         EnemyShooting.SetFireOrNot ("round", false);
 
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(1);
+
+        // move backward
+        BossDirectionChange ();
+        MoveForwardSwitch (true);
+        yield return new WaitForSeconds(0.5f);
+        MoveForwardSwitch (false);
 
         // tur
         EnemyShooting.SetFireRate ("tur", 1f);
@@ -258,16 +267,10 @@ public class Done_GameController_stage3 : MonoBehaviour
         yield return new WaitForSeconds(5);
         EnemyShooting.SetFireOrNot ("tur", false);
 
-        // move backward
-        BossDirectionChange ();
-        yield return new WaitForSeconds(2);
-        MoveForwardSwitch (true);
-        yield return new WaitForSeconds(0.5f);
-        MoveForwardSwitch (false);
-
         yield return StartCoroutine( HardRoutine() );
     }
 
+    // boss third status routine
     IEnumerator HardRoutine ()
     {
         while (bossMode == 3)
@@ -288,21 +291,25 @@ public class Done_GameController_stage3 : MonoBehaviour
         }
     }
 
+    // switch boss move
     private void MoveForwardSwitch (bool toSet)
     {
         moveForward = toSet;
     }
 
+    // switch boss move
     private void BossMoveSwitch (bool toSet)
     {
         bossMove = toSet;
     }
 
+    // change boss direction boolean for system operation
     private void BossDirectionChange ()
     {
         bossDirectionChange = true;
     }
 
+    // change boss speed boolean for system operation
     private void BossSpeedChange (float rate)
     {
         bossSpeedChange = true;
@@ -329,6 +336,7 @@ public class Done_GameController_stage3 : MonoBehaviour
         return gameOver;
     }
 
+    // boss change mode
     public void SetBossMode (int mode)
     {
         bossMode = mode;

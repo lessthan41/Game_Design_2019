@@ -5,13 +5,15 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 
+// control enemy position Instantiate enemyBullet
 public class EnemyShooting_stage3 : MonoBehaviour
 {
     public Transform enemyShotSpawn;
     public GameObject shot;
     public Done_GameController_stage3 game;
-    public Done_Mover_Enemy bullet;
+    public Done_Mover_Enemy_stage23 bullet;
 
+    // fire rate
     public float speed;
     public float EnemyFireRate1;
     public float EnemyFireRate2;
@@ -19,6 +21,7 @@ public class EnemyShooting_stage3 : MonoBehaviour
     public float EnemyFireRate4;
     public float EnemyFireRate5;
 
+    // fire mode switcher
     public bool isLaser;
     public bool isUnit;
     public bool isSpawn;
@@ -27,14 +30,17 @@ public class EnemyShooting_stage3 : MonoBehaviour
     public bool isDuo;
     public bool isTur;
 
+    // fire amount
     public bool startShooting;
     public int spreadAmount_spawn;
     public int spreadAmount_round;
     public int spreadAmount_duo;
     public int spreadAmount_tur;
 
+    // shotspawn position recorder
     public static Vector3 shotSpawnRecorder;
 
+    // Code calculate needed
     private float nextFire1;
     private float nextFire2;
     private float nextFire3;
@@ -42,22 +48,28 @@ public class EnemyShooting_stage3 : MonoBehaviour
     private float nextFire5;
     private float rotateDegree;
     private int rotateSign;
+    private int rotateSpeed;
 
+    // entity manager & entity prefab for instantiate
     EntityManager manager;
     Entity bulletEntityPrefab;
 
     void Start()
     {
+        // initialize manager and bullet prefab for instantiate
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
         rotateDegree = 0f;
         rotateSign = 1;
+        rotateSpeed = 5;
     }
 
     void Update()
     {
+        // set shotSpawn position
         enemyShotSpawn.position = shotSpawnRecorder - new Vector3 (0f, 0f, 1f);
 
+        // control shooting types
         if (startShooting == true)
         {
             if (isUnit)
@@ -92,7 +104,7 @@ public class EnemyShooting_stage3 : MonoBehaviour
                     Vector3 rotation = enemyShotSpawn.rotation.eulerAngles;
                     rotation.x = 0f;
                     rotation.y += rotateDegree;
-                    rotateDegree += (rotateSign * 5); // turning
+                    rotateDegree += (rotateSign * rotateSpeed); // turning
                     RoundBulletECS(rotation, new Vector3 (0,0,0), spreadAmount_round);
                     GetComponent<AudioSource>().Play ();
                 }
@@ -206,6 +218,12 @@ public class EnemyShooting_stage3 : MonoBehaviour
         return GetComponent<Transform>().position;
     }
 
+    public void SetRotateSpeed (int inp)
+    {
+        rotateSpeed = inp;
+    }
+
+    // unit shooting
     void UnitBulletECS(Vector3 rotation)
     {
         Vector3 tempRot = rotation;
@@ -218,6 +236,7 @@ public class EnemyShooting_stage3 : MonoBehaviour
         bullets.Dispose();
     }
 
+    // spawn shooting
     void SpawnBulletECS(Vector3 rotation)
     {
         int max = spreadAmount_spawn / 2;
@@ -244,6 +263,7 @@ public class EnemyShooting_stage3 : MonoBehaviour
         bullets.Dispose();
     }
 
+    // round shooting
     void RoundBulletECS(Vector3 rotation, Vector3 shift, int spreadAmt) // def para should be const
     {
         Vector3 tempRot = rotation;
@@ -260,6 +280,7 @@ public class EnemyShooting_stage3 : MonoBehaviour
         bullets.Dispose();
     }
 
+    // duo shooting
     IEnumerator DuoRoundBulletECS(Vector3 rotation)
     {
         // first wave
@@ -281,6 +302,7 @@ public class EnemyShooting_stage3 : MonoBehaviour
         }
     }
 
+    // turbine shooting
     IEnumerator TurbineBulletECS(Vector3 rotation)
     {
         float waitTime = 0.2f;
@@ -308,6 +330,6 @@ public class EnemyShooting_stage3 : MonoBehaviour
 
     public static void SetPosition (Vector3 pos)
     {
-        shotSpawnRecorder = pos;
+        shotSpawnRecorder = pos + new Vector3 (0f, 0f, 1f);
     }
 }

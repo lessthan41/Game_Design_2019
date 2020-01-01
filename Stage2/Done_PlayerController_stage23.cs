@@ -4,22 +4,24 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
+using UnityEngine.SceneManagement;
 
-
+// player moving boundary
 [System.Serializable]
-public class Done_Boundary_test
+public class Done_Boundary_stage23
 {
 	public float xMin, xMax, zMin, zMax;
 }
 
-public class Done_PlayerController_test : MonoBehaviour
+// for player control
+public class Done_PlayerController_stage23 : MonoBehaviour
 {
 	// Assign GameObject
-	public Done_Boundary boundary;
+	public Done_Boundary_stage23 boundary;
 	public GameObject shot;
 	public Transform shotSpawn;
 
-	// 自訂參數 (飛行速度、fireRate、血量、子彈數)
+	// player setting
 	public float speed;
 	public float fireRate;
 	public float switchRate;
@@ -28,30 +30,43 @@ public class Done_PlayerController_test : MonoBehaviour
 	public int spreadAmount_round;
 	public int fireMode;
 
+	// moving animation texture
+	public float textureSwitchRate;
+	public Texture texture1;
+	public Texture texture2;
+	private int textureCnt;
+	private float nextTextureSwitch;
+
 	// Code Calculate Need
 	private float nextFire;
 	private float nextSwitch;
+
+	// for communicating with system 
 	public static float3 playerPosition;
 
+	// for player bullet instantiate
     EntityManager manager;
     Entity bulletEntityPrefab;
 
     void Start()
     {
+		// initialize player bullet prefab for instantiate
         manager = World.Active.EntityManager;
         bulletEntityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(shot, World.Active);
+
+		nextTextureSwitch = Time.time + textureSwitchRate;
     }
 
     void Update ()
 	{
-		// Switch Mode
-		if (Input.GetKey("z") && Time.time > nextSwitch)
-		{
-			nextSwitch = Time.time + switchRate;
-			fireMode = (fireMode == 3) ? 1 : (fireMode + 1);
-		}
+		// // Switch Mode
+		// if (Input.GetKey("z") && Time.time > nextSwitch)
+		// {
+		// 	nextSwitch = Time.time + switchRate;
+		// 	fireMode = (fireMode == 3) ? 1 : (fireMode + 1);
+		// }
 
-		if (Input.GetKey("space") && Time.time > nextFire)
+		if (Input.GetKeyDown("space") && Time.time > nextFire)
 		{
 			nextFire = Time.time + fireRate;
 
@@ -61,21 +76,21 @@ public class Done_PlayerController_test : MonoBehaviour
 			if (fireMode == 1)
 			{
 				UnitBulletECS(rotation);
-
 			}
-			else if (fireMode == 2)
-			{
-				SpawnBulletECS(rotation);
-			}
-			else
-			{
-				RoundBulletECS(rotation);
-			}
+			// else if (fireMode == 2)
+			// {
+			// 	SpawnBulletECS(rotation);
+			// }
+			// else
+			// {
+			// 	RoundBulletECS(rotation);
+			// }
 
             GetComponent<AudioSource>().Play ();
 		}
 	}
 
+	// player controller
 	void FixedUpdate ()
 	{
 		float moveHorizontal = Input.GetAxis ("Horizontal");
@@ -91,7 +106,12 @@ public class Done_PlayerController_test : MonoBehaviour
 			Mathf.Clamp (GetComponent<Rigidbody>().position.z, boundary.zMin, boundary.zMax)
 		);
 
-		// 時刻紀錄位置 & 判定是否刪除玩家、結束遊戲
+		if (moveHorizontal != 0f || moveVertical != 0)
+		{
+			SwitchTexture ();
+		}
+
+		// get player position
 		playerPosition = GetComponent<Rigidbody>().position;
 	}
 
@@ -151,5 +171,31 @@ public class Done_PlayerController_test : MonoBehaviour
         }
         bullets.Dispose();
     }
+
+	// change texture for moving animation
+	private void SwitchTexture ()
+	{
+		bool check;
+		if (SceneManager.GetActiveScene().buildIndex == 4)
+			check = Done_GameController_stage2.gameOver;
+		else if (SceneManager.GetActiveScene().buildIndex == 6)
+			check = Done_GameController_stage3.gameOver;
+		else
+			check = false;
+
+		if (check == false && Time.time >= nextTextureSwitch)
+		{
+			nextTextureSwitch = Time.time + textureSwitchRate;
+			if (textureCnt == 0)
+			{
+				GetComponent<Renderer>().material.mainTexture = texture2;
+			}
+			else
+			{
+				GetComponent<Renderer>().material.mainTexture = texture1;
+			}
+			textureCnt = (textureCnt == 0) ? 1 : 0;
+		}
+	}
 
 }
